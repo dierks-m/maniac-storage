@@ -1,5 +1,10 @@
 -- Variables --
-local itemTableMT = {}
+--- @class Item
+--- @field count number
+--- @field maxCount number
+--- @field displayName string
+--- @field name string
+local Item = {}
 -- Variables --
 
 
@@ -34,7 +39,7 @@ local function tagsMatch(stack, filter)
     return true
 end
 
-function itemTableMT:matches(...)
+function Item:matches(...)
     local filters = {...}
 
     for _, filter in pairs(filters) do
@@ -48,8 +53,27 @@ function itemTableMT:matches(...)
     return false
 end
 
+local function tableDeepCopy(input)
+    local output = {}
+
+    for k, v in pairs(input) do
+        output[k] = type(v) == "table" and tableDeepCopy(v) or v
+    end
+
+    return output
+end
+
+--- @return Item
+function Item:clone()
+    local clone = tableDeepCopy(self)
+    setmetatable(clone, getmetatable(self))
+
+    return clone
+end
+
+--- @type fun() : Item
 local function new(itemStack)
-    setmetatable(itemStack, {__index = itemTableMT})
+    setmetatable(itemStack, {__index = Item })
 
     return itemStack
 end
