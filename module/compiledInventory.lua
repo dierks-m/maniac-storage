@@ -68,7 +68,7 @@ local function newCompiledInventory(inventories)
         inventoryList = inventories
     }
 
-    return setmetatable(compiledInventory, {_index = CompiledInventory})
+    return setmetatable(compiledInventory, {__index = CompiledInventory})
 end
 -- Functions --
 

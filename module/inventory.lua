@@ -54,7 +54,7 @@ local function readInventory(self)
     local list = self.inventory.list()
     self.cache = {}
 
-    for k in ipairs(list) do
+    for k in pairs(list) do
         self.cache[k] = item.new(self.inventory.getItemDetail(k))
     end
 
@@ -62,7 +62,7 @@ local function readInventory(self)
 end
 
 function Inventory:getItems()
-    if not next(self.cache) then
+    if not self.cache then
         return readInventory(self)
     end
 
