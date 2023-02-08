@@ -34,7 +34,7 @@ end
 --- Push an item that matches a filter to a given inventory and target slot
 --- @param targetName string
 --- @param targetSlot number
---- @param filter Item
+--- @param filter Filter
 --- @param amount number
 function Inventory:pushItem(targetName, targetSlot, filter, amount)
     if not self.cache then self:read() end
@@ -46,7 +46,7 @@ function Inventory:pushItem(targetName, targetSlot, filter, amount)
             break
         end
 
-        if item:matches(filter) then
+        if filter:matches(item) then
             local transferredAmount = self.inventory.pushItems(
                     targetName,
                     slot,
