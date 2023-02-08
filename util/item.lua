@@ -71,7 +71,7 @@ function Item:clone()
     return clone
 end
 
---- @type fun() : Item
+--- @return Item
 local function new(itemStack)
     setmetatable(itemStack, {__index = Item })
 

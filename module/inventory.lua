@@ -20,52 +20,6 @@ local function deleteEmptyStacks(self)
     end
 end
 
-function Inventory:read()
-    local list = self.inventory.list()
-    self.cache = {}
-
-    for k in ipairs(list) do
-        self.cache[k] = item.new(self.inventory.getItemDetail(k))
-    end
-
-    return self.cache
-end
-
---- Push an item that matches a filter to a given inventory and target slot
---- @param targetName string
---- @param targetSlot number
---- @param filter Filter
---- @param amount number
-function Inventory:pushItem(targetName, targetSlot, filter, amount)
-    if not self.cache then self:read() end
-
-    local totalTransferred = 0
-
-    for slot, item in pairs(self.cache) do
-        if amount == 0 then
-            break
-        end
-
-        if filter:matches(item) then
-            local transferredAmount = self.inventory.pushItems(
-                    targetName,
-                    slot,
-                    amount,
-                    targetSlot
-            )
-
-            totalTransferred = totalTransferred + transferredAmount
-            amount = amount - transferredAmount
-
-            item.count = item.count - transferredAmount
-        end
-    end
-
-    deleteEmptyStacks(self)
-
-    return totalTransferred
-end
-
 --- Adds an item to a list of items, increasing the count if the item
 --- already exists in that list
 --- @param list Item[]
@@ -93,6 +47,61 @@ local function compileItemList(inventory)
     end
 
     return items
+end
+
+--- @param self Inventory
+local function readInventory(self)
+    local list = self.inventory.list()
+    self.cache = {}
+
+    for k in ipairs(list) do
+        self.cache[k] = item.new(self.inventory.getItemDetail(k))
+    end
+
+    return self.cache
+end
+
+function Inventory:getItems()
+    if not next(self.cache) then
+        return readInventory(self)
+    end
+
+    return compileItemList(self.cache)
+end
+
+--- Push an item that matches a filter to a given inventory and target slot
+--- @param targetName string
+--- @param targetSlot number
+--- @param filter Filter
+--- @param amount number
+function Inventory:pushItem(targetName, targetSlot, filter, amount)
+    if not self.cache then readInventory(self) end
+
+    local totalTransferred = 0
+
+    for slot, item in pairs(self.cache) do
+        if amount == 0 then
+            break
+        end
+
+        if filter:matches(item) then
+            local transferredAmount = self.inventory.pushItems(
+                    targetName,
+                    slot,
+                    amount,
+                    targetSlot
+            )
+
+            totalTransferred = totalTransferred + transferredAmount
+            amount = amount - transferredAmount
+
+            item.count = item.count - transferredAmount
+        end
+    end
+
+    deleteEmptyStacks(self)
+
+    return totalTransferred
 end
 
 --- @return Inventory
