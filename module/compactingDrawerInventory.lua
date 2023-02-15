@@ -4,6 +4,7 @@ local item = require("util.item")
 --- Inventory class
 --- @class CompactingDrawerInventory : Inventory
 --- @field inventory
+--- @field filter Filter
 --- @field cache Item[]
 local CompactingDrawerInventory = {}
 
@@ -73,6 +74,14 @@ local function updateAllSlotCounts(self)
     end
 end
 
+local function acceptsItem(self, item)
+    if not self.filter then
+        return true
+    end
+
+    return self.filter:matches(item)
+end
+
 function CompactingDrawerInventory:pushItem(targetName, targetSlot, filter, amount)
     if not self.cache then readInventory(self) end
 
@@ -103,12 +112,29 @@ function CompactingDrawerInventory:pushItem(targetName, targetSlot, filter, amou
     return totalTransferred
 end
 
+function CompactingDrawerInventory:pullItem(sourceName, sourceSlot, item, amount)
+    if not acceptsItem(self, item) then
+        return 0
+    end
+
+    if not self.cache then readInventory(self) end
+
+    local actualTransferred = self.inventory.pullItems(sourceName, sourceSlot, amount)
+    updateAllSlotCounts(self)
+
+    return actualTransferred
+end
+
 function CompactingDrawerInventory:getItems()
     if not self.cache then
         return readInventory(self)
     end
 
     return compileItemList(self.cache)
+end
+
+function CompactingDrawerInventory:setFilter(filter)
+    self.filter = filter
 end
 
 --- @return CompactingDrawerInventory

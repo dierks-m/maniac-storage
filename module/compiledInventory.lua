@@ -53,7 +53,7 @@ end
 --- @param targetSlot number
 --- @param filter Filter
 --- @param amount number
-function CompiledInventory:pushItem(targetName, targetSlot, filter, amount)
+function CompiledInventory:extract(targetName, targetSlot, filter, amount)
     local totalTransferred = 0
 
     for _, inventory in pairs(self.inventoryList) do
@@ -64,6 +64,29 @@ function CompiledInventory:pushItem(targetName, targetSlot, filter, amount)
         local transferredItems = inventory.inventory:pushItem(targetName, targetSlot, filter, math.min(amount, amount-totalTransferred))
         totalTransferred = totalTransferred + transferredItems
     end
+
+    return totalTransferred
+end
+
+--- Pulls an item if any of the inventories accepts that item and returns the amount actually pulled.
+--- @param sourceName string
+--- @param sourceSlot number
+--- @param item Item
+--- @param amount number
+--- @return number
+function CompiledInventory:insert(sourceName, sourceSlot, item, amount)
+    local totalTransferred = 0
+
+    for _, inventory in pairs(self.inventoryList) do
+        if amount - totalTransferred <= 0 then
+            return totalTransferred
+        end
+
+        local transferredItems = inventory.inventory:pullItem(sourceName, sourceSlot, item, math.min(amount, amount-totalTransferred))
+        totalTransferred = totalTransferred + transferredItems
+    end
+
+    return totalTransferred
 end
 
 function CompiledInventory:addInventory(inventory, priority)

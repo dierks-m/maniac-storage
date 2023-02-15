@@ -4,12 +4,23 @@ local item = require("util.item")
 --- Inventory class
 --- @class PhysicalInventory : Inventory
 --- @field inventory
+--- @field filter Filter
 --- @field cache Item[]
 local PhysicalInventory = {}
 -- Variables --
 
 
 -- Functions --
+--- @param self PhysicalInventory
+--- @param item Item
+local function acceptsItem(self, item)
+    if not self.filter then
+        return true
+    end
+
+    return self.filter:matches(item)
+end
+
 --- Deletes stacks with zero-count
 --- @param self PhysicalInventory
 local function deleteEmptyStacks(self)
@@ -61,6 +72,18 @@ local function readInventory(self)
     return self.cache
 end
 
+local function updateCache(self)
+    local itemList = self.inventory.list()
+
+    for slot, itemStack in pairs(itemList) do
+        if not self.cache[slot] then
+            self.cache[slot] = item.new(self.inventory.getItemDetail(slot))
+        else
+            self.cache[slot].count = itemStack.count
+        end
+    end
+end
+
 function PhysicalInventory:getItems()
     if not self.cache then
         return readInventory(self)
@@ -97,6 +120,19 @@ function PhysicalInventory:pushItem(targetName, targetSlot, filter, amount)
     deleteEmptyStacks(self)
 
     return totalTransferred
+end
+
+function PhysicalInventory:pullItem(sourceName, sourceSlot, item, amount)
+    if not acceptsItem(self, item) then
+        return 0
+    end
+
+    if not self.cache then self.cache = {} end
+
+    local actualTransferred = self.inventory.pullItems(sourceName, sourceSlot, amount)
+    updateCache(self)
+
+    return actualTransferred
 end
 
 --- @return PhysicalInventory
