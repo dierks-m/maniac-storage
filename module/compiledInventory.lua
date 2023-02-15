@@ -1,6 +1,11 @@
 -- Variables --
+--- @class PrioritizedInventory
+--- @field inventory Inventory
+--- @field priority number
+local PrioritizedInventory
+
 --- @class CompiledInventory
---- @field inventoryList Inventory[]
+--- @field inventoryList PrioritizedInventory[]
 local CompiledInventory = {}
 -- Variables --
 
@@ -23,13 +28,13 @@ local function addItemToList(list, item)
 end
 
 --- Compiles a list of items from a list of stacks
---- @param inventories Inventory[]
+--- @param inventories PrioritizedInventory[]
 --- @return Item[]
 local function compileItemList(inventories)
     local items = {}
 
     for _, inventory in pairs(inventories) do
-        local inventoryItems = inventory:getItems()
+        local inventoryItems = inventory.inventory:getItems()
 
         for _, item in pairs(inventoryItems) do
             addItemToList(items, item)
@@ -56,16 +61,30 @@ function CompiledInventory:pushItem(targetName, targetSlot, filter, amount)
             return totalTransferred
         end
 
-        local transferredItems = inventory:pushItem(targetName, targetSlot, filter, math.min(amount, amount-totalTransferred))
+        local transferredItems = inventory.inventory:pushItem(targetName, targetSlot, filter, math.min(amount, amount-totalTransferred))
         totalTransferred = totalTransferred + transferredItems
     end
 end
 
+function CompiledInventory:addInventory(inventory, priority)
+    local position = 1
+
+    for k, invMap in ipairs(self.inventoryList) do
+        if invMap.priority > priority then
+            position = k + 1
+        else
+            break
+        end
+    end
+
+    table.insert(self.inventoryList, position, {inventory=inventory, priority=priority})
+end
+
 --- @param inventories Inventory[]
 --- @return CompiledInventory
-local function newCompiledInventory(inventories)
+local function newCompiledInventory()
     local compiledInventory = {
-        inventoryList = inventories
+        inventoryList = {}
     }
 
     return setmetatable(compiledInventory, {__index = CompiledInventory})
