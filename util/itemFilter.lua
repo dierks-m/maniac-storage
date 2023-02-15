@@ -1,6 +1,7 @@
 -- Variables --
 --- @class Filter
---- @field filters
+--- @field filters Filter[]
+--- @field isWhitelist boolean
 local Filter = {}
 -- Variables --
 
@@ -42,17 +43,18 @@ function Filter:matches(item)
         if displayNameMatches(item, filter) and
                 nameMatches(item, filter) and
                 tagsMatch(item, filter) then
-            return true
+            return not self.isWhitelist
         end
     end
 
-    return false
+    return self.isWhitelist
 end
 
 --- @return Filter
 local function newFilter(...)
     local filter = {
-        filters = {...}
+        filters = {...},
+        isWhitelist = false
     }
 
     return setmetatable(filter, {__index = Filter})
