@@ -4,9 +4,9 @@
 --- @field priority number
 local PrioritizedInventory
 
---- @class CompiledInventory
+--- @class CompoundInventory
 --- @field inventoryList PrioritizedInventory[]
-local CompiledInventory = {}
+local CompoundInventory = {}
 -- Variables --
 
 
@@ -44,7 +44,7 @@ local function compileItemList(inventories)
     return items
 end
 
-function CompiledInventory:getItems()
+function CompoundInventory:getItems()
     return compileItemList(self.inventoryList)
 end
 
@@ -53,7 +53,7 @@ end
 --- @param targetSlot number
 --- @param filter Filter
 --- @param amount number
-function CompiledInventory:extract(targetName, targetSlot, filter, amount)
+function CompoundInventory:extract(targetName, targetSlot, filter, amount)
     local totalTransferred = 0
 
     for _, inventory in pairs(self.inventoryList) do
@@ -74,7 +74,7 @@ end
 --- @param item Item
 --- @param amount number
 --- @return number
-function CompiledInventory:insert(sourceName, sourceSlot, item, amount)
+function CompoundInventory:insert(sourceName, sourceSlot, item, amount)
     local totalTransferred = 0
 
     for _, inventory in pairs(self.inventoryList) do
@@ -89,7 +89,7 @@ function CompiledInventory:insert(sourceName, sourceSlot, item, amount)
     return totalTransferred
 end
 
-function CompiledInventory:addInventory(inventory, priority)
+function CompoundInventory:addInventory(inventory, priority)
     local position = 1
 
     for k, invMap in ipairs(self.inventoryList) do
@@ -110,7 +110,7 @@ local function newCompiledInventory()
         inventoryList = {}
     }
 
-    return setmetatable(compiledInventory, {__index = CompiledInventory})
+    return setmetatable(compiledInventory, {__index = CompoundInventory })
 end
 -- Functions --
 
