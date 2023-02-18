@@ -59,6 +59,11 @@ function Filter:matches(item)
     return self.isWhitelist
 end
 
+--- @param isWhitelist boolean
+function Filter:setWhiteList(isWhitelist)
+    self.isWhitelist = isWhitelist
+end
+
 --- @return Filter
 local function newFilter(...)
     local filter = {

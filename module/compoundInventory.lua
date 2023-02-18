@@ -89,6 +89,8 @@ function CompoundInventory:insert(sourceName, sourceSlot, item, amount)
     return totalTransferred
 end
 
+--- @param inventory Inventory
+--- @param priority number
 function CompoundInventory:addInventory(inventory, priority)
     local position = 1
 

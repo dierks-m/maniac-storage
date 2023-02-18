@@ -93,7 +93,9 @@ function PhysicalInventory:getItems()
 end
 
 function PhysicalInventory:pushItem(targetName, targetSlot, filter, amount)
-    if not self.cache then readInventory(self) end
+    if not self.cache then
+        readInventory(self)
+    end
 
     local totalTransferred = 0
 
