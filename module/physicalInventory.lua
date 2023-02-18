@@ -137,6 +137,10 @@ function PhysicalInventory:pullItem(sourceName, sourceSlot, item, amount)
     return actualTransferred
 end
 
+function PhysicalInventory:setFilter(filter)
+    self.filter = filter
+end
+
 --- @return PhysicalInventory
 local function newInventory(name)
     local inventory = {
