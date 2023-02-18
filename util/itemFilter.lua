@@ -15,6 +15,14 @@ local function displayNameMatches(stack, filter)
     return filter.displayName == stack.displayName
 end
 
+local function displayNamePatternMatches(stack, filter)
+    if not filter.displayNamePattern then
+        return true
+    end
+
+    return stack.displayName:match(filter.displayNamePattern)
+end
+
 local function nameMatches(stack, filter)
     if not filter.name then
         return true
@@ -41,6 +49,7 @@ end
 function Filter:matches(item)
     for _, filter in pairs(self.filters) do
         if displayNameMatches(item, filter) and
+                displayNamePatternMatches(item, filter) and
                 nameMatches(item, filter) and
                 tagsMatch(item, filter) then
             return not self.isWhitelist
