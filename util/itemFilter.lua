@@ -120,14 +120,12 @@ function ItemFilter:matches(item)
 end
 
 --- @return ItemFilter
-local function newFilter(filter)
+ItemFilter.new = function(filter)
     return setmetatable(filter, {__index = ItemFilter })
 end
 -- Functions --
 
 
 -- Returning of API --
-return {
-    new = newFilter
-}
+return ItemFilter
 -- Returning of API --
