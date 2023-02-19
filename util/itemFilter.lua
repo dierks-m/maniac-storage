@@ -1,8 +1,13 @@
+local enchantmentFilter = require("util.enchantmentFilter")
+
 -- Variables --
---- @class Filter
---- @field filters Filter[]
---- @field isWhitelist boolean
-local Filter = {}
+--- @class ItemFilter : Filter
+--- @field displayName string
+--- @field displayNamePattern string
+--- @field name string
+--- @field tags string[]
+--- @field enchantments EnchantmentFilter[]
+local ItemFilter = {}
 -- Variables --
 
 
@@ -45,33 +50,33 @@ local function tagsMatch(stack, filter)
     return true
 end
 
---- @param item Item
-function Filter:matches(item)
-    for _, filter in pairs(self.filters) do
-        if displayNameMatches(item, filter) and
-                displayNamePatternMatches(item, filter) and
-                nameMatches(item, filter) and
-                tagsMatch(item, filter) then
-            return not self.isWhitelist
+--- @param stack Item
+--- @param filter ItemFilter
+local function enchantmentsMatch(stack, filter)
+    if not filter.enchantments then
+        return true
+    end
+
+    for _, enchantment in pairs(filter.enchantments) do
+        if not enchantmentFilter.matches(stack, enchantment) then
+            return false
         end
     end
 
-    return self.isWhitelist
+    return true
 end
 
---- @param isWhitelist boolean
-function Filter:setWhiteList(isWhitelist)
-    self.isWhitelist = isWhitelist
+function ItemFilter:matches(item)
+    return displayNameMatches(item, self)
+            and displayNamePatternMatches(item, self)
+            and nameMatches(item, self)
+            and tagsMatch(item, self)
+            and enchantmentsMatch(item, self)
 end
 
---- @return Filter
-local function newFilter(...)
-    local filter = {
-        filters = {...},
-        isWhitelist = false
-    }
-
-    return setmetatable(filter, {__index = Filter})
+--- @return ItemFilter
+local function newFilter(filter)
+    return setmetatable(filter, {__index = ItemFilter })
 end
 -- Functions --
 

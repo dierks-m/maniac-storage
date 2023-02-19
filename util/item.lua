@@ -4,6 +4,7 @@
 --- @field maxCount number
 --- @field displayName string
 --- @field name string
+--- @field enchantments Enchantment[]
 local Item = {}
 -- Variables --
 
