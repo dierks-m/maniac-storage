@@ -11,18 +11,23 @@ local enchantmentFilter = require("util.enchantmentFilter")
 --- @field maxCount number
 --- @field displayName string
 --- @field name string
+--- @field nbt string
 --- @field enchantments Enchantment[]
 local Item = {}
 -- Variables --
 
 
 -- Functions --
-local function nameMatches(stack, filter)
-    return filter.name == stack.name
+--- @param self Item
+--- @param other Item
+local function nameMatches(self, other)
+    return other.name == self.name
 end
 
-local function nbtMatches(stack, filter)
-    return stack.nbt == filter.nbt
+--- @param self Item
+--- @param other Item
+local function nbtMatches(self, other)
+    return self.nbt == other.nbt
 end
 
 --- @param stack Item
@@ -37,17 +42,19 @@ local function hasEnchantment(stack, enchantment)
     return false
 end
 
-local function enchantmentsMatch(stack, filter)
+--- @param self Item
+--- @param other Item
+local function enchantmentsMatch(self, other)
     if not self.enchantments then
-        return not filter.enchantments
+        return not other.enchantments
     end
 
-    if not filter.enchantments then
+    if not other.enchantments then
         return false
     end
 
-    for enchantment in pairs(stack.enchantments) do
-        if not hasEnchantment(filter, enchantment) then
+    for _, enchantment in pairs(self.enchantments) do
+        if not hasEnchantment(other, enchantment) then
             return false
         end
     end
