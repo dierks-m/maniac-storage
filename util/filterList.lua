@@ -6,11 +6,11 @@ local FilterList = {}
 function FilterList:matches(item)
     for _, filter in pairs(self.filters) do
         if filter:matches(item) then
-            return not self.isWhitelist
+            return self.isWhitelist
         end
     end
 
-    return self.isWhitelist
+    return not self.isWhitelist
 end
 
 --- @param isWhitelist boolean

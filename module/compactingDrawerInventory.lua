@@ -1,5 +1,5 @@
 -- Variables --
-local item = require("util.item")
+local Item = require("util.item")
 
 --- Inventory class
 --- @class CompactingDrawerInventory : Inventory
@@ -31,7 +31,7 @@ local function readInventory(self)
     self.cache = {}
 
     for k in pairs(list) do
-        self.cache[k] = item.new(self.inventory.getItemDetail(k))
+        self.cache[k] = Item.new(self.inventory.getItemDetail(k))
     end
 
     return self.cache
