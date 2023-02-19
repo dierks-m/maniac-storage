@@ -66,6 +66,26 @@ local function enchantmentsMatch(stack, filter)
     return true
 end
 
+local function hasItemGroup(stack, group)
+    for g in pairs(stack.itemGroups) do
+        if g.id == group.id then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function itemGroupsMatch(stack, filter)
+    for group in pairs(stack.itemGroups) do
+        if not hasItemGroup(filter, group) then
+            return false
+        end
+    end
+
+    return true
+end
+
 function ItemFilter:matches(item)
     return displayNameMatches(item, self)
             and displayNamePatternMatches(item, self)

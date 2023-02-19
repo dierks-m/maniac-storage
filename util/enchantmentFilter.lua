@@ -1,8 +1,3 @@
---- @class Enchantment
---- @field displayName string
---- @field level number
---- @field name string
-
 --- @class EnchantmentFilter : Enchantment
 --- @field displayName string
 --- @field displayNamePattern string

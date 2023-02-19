@@ -1,4 +1,11 @@
+local enchantmentFilter = require("util.enchantmentFilter")
+
 -- Variables --
+--- @class Enchantment
+--- @field displayName string
+--- @field level number
+--- @field name string
+
 --- @class Item
 --- @field count number
 --- @field maxCount number
@@ -10,29 +17,37 @@ local Item = {}
 
 
 -- Functions --
-local function displayNameMatches(stack, filter)
-    if not filter.displayName then
-        return true
-    end
-
-    return filter.displayName == stack.displayName
-end
-
 local function nameMatches(stack, filter)
-    if not filter.name then
-        return true
-    end
-
     return filter.name == stack.name
 end
 
-local function tagsMatch(stack, filter)
-    if not filter.tags then
-        return true
+local function nbtMatches(stack, filter)
+    return stack.nbt == filter.nbt
+end
+
+--- @param stack Item
+--- @param enchantment Enchantment
+local function hasEnchantment(stack, enchantment)
+    for _, e in pairs(stack.enchantments) do
+        if e.name == enchantment.name and e.level == enchantment.level then
+            return true
+        end
     end
 
-    for tag in pairs(filter.tags) do
-        if not stack.tags[tag] then
+    return false
+end
+
+local function enchantmentsMatch(stack, filter)
+    if not self.enchantments then
+        return not filter.enchantments
+    end
+
+    if not filter.enchantments then
+        return false
+    end
+
+    for enchantment in pairs(stack.enchantments) do
+        if not hasEnchantment(filter, enchantment) then
             return false
         end
     end
@@ -40,18 +55,14 @@ local function tagsMatch(stack, filter)
     return true
 end
 
-function Item:matches(...)
-    local filters = {...}
+--- @param filter Item
+function Item:matches(filter)
+    -- No need to check display name, tags and item groups, as
+    -- the same id (name) will already uniquely identify the item type
 
-    for _, filter in pairs(filters) do
-        if displayNameMatches(self, filter) and
-                nameMatches(self, filter) and
-                tagsMatch(self, filter) then
-            return true
-        end
-    end
-
-    return false
+    return nameMatches(self, filter)
+            and nbtMatches(self, filter)
+            and enchantmentsMatch(self, filter)
 end
 
 local function tableDeepCopy(input)
