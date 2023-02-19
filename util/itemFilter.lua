@@ -1,42 +1,36 @@
-local enchantmentFilter = require("util.enchantmentFilter")
-
 -- Variables --
+--- @class ItemGroup
+--- @field displayName string
+--- @field name string
+
 --- @class ItemFilter : Filter
 --- @field displayName string
---- @field displayNamePattern string
 --- @field name string
---- @field tags string[]
+--- @field nbt string
 --- @field enchantments EnchantmentFilter[]
+--- @field itemGroups ItemGroup[]
 local ItemFilter = {}
 -- Variables --
 
 
 -- Functions --
-local function displayNameMatches(stack, filter)
-    if not filter.displayName then
-        return true
-    end
-
-    return filter.displayName == stack.displayName
+local function displayNameMatches(filter, stack)
+    return not filter.displayName or filter.displayName == stack.displayName
 end
 
-local function displayNamePatternMatches(stack, filter)
-    if not filter.displayNamePattern then
-        return true
-    end
-
-    return stack.displayName:match(filter.displayNamePattern)
+local function displayNamePatternMatches(filter, stack)
+    return not filter.displayNamePattern or stack.displayName:match(filter.displayNamePattern)
 end
 
-local function nameMatches(stack, filter)
-    if not filter.name then
-        return true
-    end
-
-    return filter.name == stack.name
+local function nameMatches(filter, stack)
+    return not filter.name or filter.name == stack.name
 end
 
-local function tagsMatch(stack, filter)
+local function nbtMatches(filter, stack)
+    return not filter.nbt or filter.nbt == stack.nbt
+end
+
+local function tagsMatch(filter, stack)
     if not filter.tags then
         return true
     end
@@ -50,15 +44,43 @@ local function tagsMatch(stack, filter)
     return true
 end
 
---- @param stack Item
+--- @param filter EnchantmentFilter
+--- @param enchantment Enchantment
+local function levelMatches(filter, enchantment)
+    if not filter.level then
+        return true
+    end
+
+    return filter.level == enchantment.level
+end
+
+--- @param item Item
+--- @param enchantmentFilter EnchantmentFilter
+local function enchantmentMatches(item, enchantmentFilter)
+    if not item.enchantments then
+        return false
+    end
+
+    for _, enchantment in pairs(item.enchantments) do
+        if displayNameMatches(enchantmentFilter, enchantment)
+                and displayNamePatternMatches(enchantmentFilter, enchantment)
+                and levelMatches(enchantmentFilter, enchantment) then
+            return true
+        end
+    end
+
+    return false
+end
+
 --- @param filter ItemFilter
-local function enchantmentsMatch(stack, filter)
+--- @param stack Item
+local function enchantmentsMatch(filter, stack)
     if not filter.enchantments then
         return true
     end
 
     for _, enchantment in pairs(filter.enchantments) do
-        if not enchantmentFilter.matches(stack, enchantment) then
+        if not enchantmentMatches(stack, enchantment) then
             return false
         end
     end
@@ -76,7 +98,7 @@ local function hasItemGroup(stack, group)
     return false
 end
 
-local function itemGroupsMatch(stack, filter)
+local function itemGroupsMatch(filter, stack)
     for group in pairs(stack.itemGroups) do
         if not hasItemGroup(filter, group) then
             return false
@@ -86,12 +108,15 @@ local function itemGroupsMatch(stack, filter)
     return true
 end
 
+--- @param item Item
 function ItemFilter:matches(item)
-    return displayNameMatches(item, self)
-            and displayNamePatternMatches(item, self)
-            and nameMatches(item, self)
-            and tagsMatch(item, self)
-            and enchantmentsMatch(item, self)
+    return displayNameMatches(self, item)
+            and displayNamePatternMatches(self, item)
+            and nameMatches(self, item)
+            and nbtMatches(self, item)
+            and tagsMatch(self, item)
+            and enchantmentsMatch(self, item)
+            and itemGroupsMatch(self, item)
 end
 
 --- @return ItemFilter

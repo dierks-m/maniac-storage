@@ -1,12 +1,10 @@
-local enchantmentFilter = require("util.enchantmentFilter")
-
 -- Variables --
 --- @class Enchantment
 --- @field displayName string
 --- @field level number
 --- @field name string
 
---- @class Item
+--- @class Item : Filter
 --- @field count number
 --- @field maxCount number
 --- @field displayName string
@@ -62,14 +60,13 @@ local function enchantmentsMatch(self, other)
     return true
 end
 
---- @param filter Item
-function Item:matches(filter)
+function Item:matches(other)
     -- No need to check display name, tags and item groups, as
     -- the same id (name) will already uniquely identify the item type
 
-    return nameMatches(self, filter)
-            and nbtMatches(self, filter)
-            and enchantmentsMatch(self, filter)
+    return nameMatches(self, other)
+            and nbtMatches(self, other)
+            and enchantmentsMatch(self, other)
 end
 
 local function tableDeepCopy(input)
@@ -91,7 +88,7 @@ function Item:clone()
 end
 
 --- @return Item
-local function new(itemStack)
+Item.new = function(itemStack)
     setmetatable(itemStack, {__index = Item })
 
     return itemStack
@@ -100,7 +97,5 @@ end
 
 
 -- Returning of API --
-return {
-    new = new
-}
+return Item
 -- Returning of API --
