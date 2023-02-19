@@ -19,7 +19,7 @@ local function displayNameMatches(filter, stack)
 end
 
 local function displayNamePatternMatches(filter, stack)
-    return not filter.displayNamePattern or stack.displayName:match(filter.displayNamePattern)
+    return not filter.displayNamePattern or stack.displayName:lower():match(filter.displayNamePattern:lower())
 end
 
 local function nameMatches(filter, stack)

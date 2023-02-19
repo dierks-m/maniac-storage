@@ -137,6 +137,9 @@ function CompactingDrawerInventory:setFilter(filter)
     self.filter = filter
 end
 
+function CompactingDrawerInventory:setLimitCheck()
+end
+
 --- @return CompactingDrawerInventory
 local function newInventory(name)
     if not validInventoryTypes[peripheral.getType(name)] then

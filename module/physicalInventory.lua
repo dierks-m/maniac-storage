@@ -5,6 +5,7 @@ local Item = require("util.item")
 --- @class PhysicalInventory : Inventory
 --- @field inventory
 --- @field slotCount number
+--- @field limitCheck boolean
 --- @field filter Filter
 --- @field cache Item[]
 local PhysicalInventory = {}
@@ -88,7 +89,7 @@ end
 --- @param self PhysicalInventory
 --- @param item Item
 local function itemFits(self, item)
-    if #self.cache < self.slotCount then
+    if not self.limitCheck or #self.cache < self.slotCount then
         return true
     end
 
@@ -162,10 +163,15 @@ function PhysicalInventory:setFilter(filter)
     self.filter = filter
 end
 
+function PhysicalInventory:setLimitCheck(value)
+    self.limitCheck = value
+end
+
 --- @return PhysicalInventory
 local function newInventory(name)
     local inventory = {
-        inventory = peripheral.wrap(name)
+        inventory = peripheral.wrap(name),
+        limitCheck = true
     }
 
     inventory.slotCount = inventory.inventory.size()
