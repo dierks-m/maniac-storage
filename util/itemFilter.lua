@@ -99,6 +99,10 @@ local function hasItemGroup(stack, group)
 end
 
 local function itemGroupsMatch(filter, stack)
+    if not filter.itemGroups then
+        return true
+    end
+
     for group in pairs(stack.itemGroups) do
         if not hasItemGroup(filter, group) then
             return false
