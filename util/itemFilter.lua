@@ -89,7 +89,7 @@ local function enchantmentsMatch(filter, stack)
 end
 
 local function hasItemGroup(stack, group)
-    for g in pairs(stack.itemGroups) do
+    for _, g in pairs(stack.itemGroups) do
         if g.id == group.id then
             return true
         end
@@ -103,7 +103,7 @@ local function itemGroupsMatch(filter, stack)
         return true
     end
 
-    for group in pairs(stack.itemGroups) do
+    for _, group in pairs(stack.itemGroups) do
         if not hasItemGroup(filter, group) then
             return false
         end
