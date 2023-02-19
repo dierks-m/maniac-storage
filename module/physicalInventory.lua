@@ -1,9 +1,10 @@
 -- Variables --
-local item = require("util.item")
+local Item = require("util.item")
 
 --- Inventory class
 --- @class PhysicalInventory : Inventory
 --- @field inventory
+--- @field slotCount number
 --- @field filter Filter
 --- @field cache Item[]
 local PhysicalInventory = {}
@@ -66,7 +67,7 @@ local function readInventory(self)
     self.cache = {}
 
     for k in pairs(list) do
-        self.cache[k] = item.new(self.inventory.getItemDetail(k))
+        self.cache[k] = Item.new(self.inventory.getItemDetail(k))
     end
 
     return self.cache
@@ -77,11 +78,27 @@ local function updateCache(self)
 
     for slot, itemStack in pairs(itemList) do
         if not self.cache[slot] then
-            self.cache[slot] = item.new(self.inventory.getItemDetail(slot))
+            self.cache[slot] = Item.new(self.inventory.getItemDetail(slot))
         else
             self.cache[slot].count = itemStack.count
         end
     end
+end
+
+--- @param self PhysicalInventory
+--- @param item Item
+local function itemFits(self, item)
+    if #self.cache < self.slotCount then
+        return true
+    end
+
+    for _, slotContent in pairs(self.cache) do
+        if slotContent:matches(item) and slotContent.count < slotContent.maxCount then
+            return true
+        end
+    end
+
+    return false
 end
 
 function PhysicalInventory:getItems()
@@ -129,7 +146,11 @@ function PhysicalInventory:pullItem(sourceName, sourceSlot, item, amount)
         return 0
     end
 
-    if not self.cache then self.cache = {} end
+    if not self.cache then readInventory(self) end
+
+    if not itemFits(self, item) then
+        return 0
+    end
 
     local actualTransferred = self.inventory.pullItems(sourceName, sourceSlot, amount)
     updateCache(self)
@@ -146,6 +167,8 @@ local function newInventory(name)
     local inventory = {
         inventory = peripheral.wrap(name)
     }
+
+    inventory.slotCount = inventory.inventory.size()
 
     return setmetatable(inventory, {__index = PhysicalInventory })
 end
