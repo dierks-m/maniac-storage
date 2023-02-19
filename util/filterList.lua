@@ -21,7 +21,7 @@ end
 --- @vararg Filter
 --- @return FilterList
 local function newList(...)
-    local list = {filters={...}}
+    local list = {filters={...}, isWhitelist=true}
 
     return setmetatable(list, {__index = FilterList})
 end
