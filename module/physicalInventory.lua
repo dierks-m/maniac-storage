@@ -1,5 +1,6 @@
 -- Variables --
 local Item = require("util.item")
+local util = require("util.util")
 
 --- Inventory class
 --- @class PhysicalInventory : Inventory
@@ -117,7 +118,8 @@ function PhysicalInventory:pushItem(targetName, targetSlot, filter, amount)
 
     local totalTransferred = 0
 
-    for slot, item in pairs(self.cache) do
+    -- Remove items in reverse to first get rid of non-full stacks
+    for slot, item in util.ipairsReverse(self.cache) do
         if amount == 0 then
             break
         end
