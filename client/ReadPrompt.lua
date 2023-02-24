@@ -3,6 +3,7 @@
 --- @field cursorPosition number
 --- @field horizontalScroll number
 --- @field width number
+--- @field biDirectionalScroll
 --- @field window
 local ReadPrompt = {}
 
@@ -10,10 +11,14 @@ local function setCursorPosition(self, position)
     local oldPosition = self.cursorPosition
     self.cursorPosition = math.max(1, math.min(position, #self.currentText + 1))
 
-    if self.cursorPosition <= self.horizontalScroll then
-        self.horizontalScroll = self.cursorPosition - 1
-    elseif self.cursorPosition > (self.horizontalScroll + self.width) then
-        self.horizontalScroll = self.cursorPosition - self.width
+    if self.biDirectionalScroll then
+        if self.cursorPosition <= self.horizontalScroll then
+            self.horizontalScroll = self.cursorPosition - 1
+        elseif self.cursorPosition > (self.horizontalScroll + self.width) then
+            self.horizontalScroll = self.cursorPosition - self.width
+        end
+    else
+        self.horizontalScroll = math.max(0, self.cursorPosition - self.width)
     end
 
     if position ~= oldPosition then
@@ -114,8 +119,10 @@ function ReadPrompt:processEvent(...)
 end
 
 --- @return ReadPrompt
-function ReadPrompt.new(text, win)
+function ReadPrompt.new(text, win, uniDirectionalScroll)
     assert(text == nil or type(text) == "string", "Text specified must be given in string form")
+    assert(win == nil or win and win.getPosition and win.getSize, "Window argument does not seem to match a window's function signature")
+    assert(not uniDirectionalScroll or uniDirectionalScroll == true, "Uni-directional scroll must be a boolean value")
 
     if not win then
         local xPos, yPos = term.getCursorPos()
@@ -132,7 +139,8 @@ function ReadPrompt.new(text, win)
         cursorPosition = #text + 1,
         horizontalScroll = 0,
         width = width,
-        window = win
+        window = win,
+        biDirectionalScroll = not uniDirectionalScroll
     }
 
     return setmetatable(readPrompt, {__index = ReadPrompt})
