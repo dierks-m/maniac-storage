@@ -117,7 +117,12 @@ end
 function ReadPrompt.new(text, win)
     assert(text == nil or type(text) == "string", "Text specified must be given in string form")
 
-    win = win or term
+    if not win then
+        local xPos, yPos = term.getCursorPos()
+        local xSize = term.getSize()
+        win = window.create(term.current(), xPos, yPos, xSize - xPos + 1, 1)
+    end
+
     local width = win.getSize()
 
     text = text or ""
