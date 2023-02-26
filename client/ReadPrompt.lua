@@ -60,7 +60,7 @@ end
 
 local function deleteBackwards(self, amount)
     self.currentText = self.currentText:sub(1, math.max(0, self.cursorPosition - amount - 1))
-            .. self.currentText:sub(self.cursorPosition + amount)
+            .. self.currentText:sub(self.cursorPosition)
     moveCursor(self, -amount)
     self:draw()
     self:focus()
