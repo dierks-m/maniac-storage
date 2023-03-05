@@ -20,9 +20,18 @@ local function getTagsForName(self, itemName)
     return tags
 end
 
+--- @param name string
+--- @return string
+local function deriveDisplayName(name)
+    return name:match(":(.+)")
+            :gsub("_", " ")
+            :gsub("([^%s]+)", function(match) return match:sub(1, 1):upper() .. match:sub(2) end)
+end
+
 --- @param item Item
 --- @return Item
 function ItemDecorator:decorate(item)
+    item.displayName = item.displayName or deriveDisplayName(item.name)
     item.tags = item.tags or getTagsForName(self, item.name)
 
     return item
