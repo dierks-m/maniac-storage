@@ -42,7 +42,8 @@ local function retrieveItems(self, items, count, attemptedRecipes)
         allItemsInserted = true
 
         for slot, item in pairs(items) do
-            local extractedCount = self.itemSystem:extract(slot, item, count)
+            local mappedSlot = slot + math.floor((slot - 1) / 3) -- Map 3x3 to 4x4 grid
+            local extractedCount = self.itemSystem:extract(mappedSlot, item, count)
 
             if extractedCount == 0 then
                 storeItems(self) -- Cleanup before crafting dependency
