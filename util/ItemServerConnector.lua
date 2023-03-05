@@ -77,6 +77,24 @@ function ItemServerConnector:getItems()
     return wrappedItems
 end
 
+--- @param itemFilter ItemFilter
+--- @param count number
+--- @return number
+function ItemServerConnector:craft(itemFilter, count)
+    rednet.broadcast({
+        command = "craft",
+        args = {itemFilter, count}
+    }, PROTOCOL_ITEM_REQUEST)
+
+    local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+
+    if not response.success then
+        return 0
+    end
+
+    return response.result[1]
+end
+
 function ItemServerConnector:connect()
     rednet.broadcast(nil, READINESS_PROTOCOL)
     rednet.receive(READINESS_RESPONSE)
