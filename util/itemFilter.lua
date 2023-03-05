@@ -1,8 +1,4 @@
 -- Variables --
---- @class ItemGroup
---- @field displayName string
---- @field name string
-
 --- @class ItemFilter : Filter
 --- @field displayName string
 --- @field name string

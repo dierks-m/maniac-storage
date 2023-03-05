@@ -128,14 +128,16 @@ function Crafter:craft(itemFilter, amount)
     return craftInternal(self, itemFilter, amount, {})
 end
 
+--- @param recipeStore CraftingRecipeStore
+--- @param itemSystem ItemServerConnector
 --- @return Crafter
 function Crafter.new(recipeStore, itemSystem)
     local crafter = {
-        recipeStore=recipeStore,
-        itemSystem=itemSystem
+        recipeStore = recipeStore,
+        itemSystem = itemSystem
     }
 
-    return setmetatable(crafter, {__index = Crafter})
+    return setmetatable(crafter, { __index = Crafter })
 end
 
 

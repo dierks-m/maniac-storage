@@ -4,6 +4,10 @@
 --- @field level number
 --- @field name string
 
+--- @class ItemGroup
+--- @field displayName string
+--- @field name string
+
 --- @class Item : Filter
 --- @field count number
 --- @field maxCount number
@@ -11,6 +15,8 @@
 --- @field name string
 --- @field nbt string
 --- @field enchantments Enchantment[]
+--- @field tags table<string, boolean>
+--- @field itemGroups ItemGroup
 local Item = {}
 -- Variables --
 

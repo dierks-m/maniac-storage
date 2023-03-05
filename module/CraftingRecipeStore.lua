@@ -17,10 +17,15 @@ function CraftingRecipeStore:getRecipes(itemFilter)
     return matchingRecipes
 end
 
+--- @param itemDecorator ItemDecorator
 --- @vararg CraftingRecipe
 --- @return CraftingRecipeStore
-function CraftingRecipeStore.new(...)
+function CraftingRecipeStore.new(itemDecorator, ...)
     local store = {recipes = {...}}
+
+    for _, recipe in pairs(store.recipes) do
+        recipe.guaranteedOutput = itemDecorator:decorate(recipe.guaranteedOutput)
+    end
 
     return setmetatable(store, {__index = CraftingRecipeStore})
 end
