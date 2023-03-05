@@ -7,7 +7,7 @@
 --- @field displayName string
 --- @field name string
 --- @field nbt string
---- @field enchantments EnchantmentFilter[]
+--- @field enchantments Enchantment[]
 --- @field itemGroups ItemGroup[]
 local ItemFilter = {}
 -- Variables --
@@ -35,6 +35,10 @@ local function tagsMatch(filter, stack)
         return true
     end
 
+    if type(stack.tags) ~= "table" then
+        return false
+    end
+
     for tag in pairs(filter.tags) do
         if not stack.tags[tag] then
             return false
@@ -44,18 +48,14 @@ local function tagsMatch(filter, stack)
     return true
 end
 
---- @param filter EnchantmentFilter
+--- @param filter Enchantment
 --- @param enchantment Enchantment
 local function levelMatches(filter, enchantment)
-    if not filter.level then
-        return true
-    end
-
-    return filter.level == enchantment.level
+    return not filter.level or filter.level == enchantment.level
 end
 
 --- @param item Item
---- @param enchantmentFilter EnchantmentFilter
+--- @param enchantmentFilter Enchantment
 local function enchantmentMatches(item, enchantmentFilter)
     if not item.enchantments then
         return false

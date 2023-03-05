@@ -69,6 +69,9 @@ function Item:matches(other)
             and enchantmentsMatch(self, other)
 end
 
+--- @generic T
+--- @param input T
+--- @return T
 local function tableDeepCopy(input)
     local output = {}
 
@@ -89,9 +92,7 @@ end
 
 --- @return Item
 Item.new = function(itemStack)
-    setmetatable(itemStack, {__index = Item })
-
-    return itemStack
+    return setmetatable(itemStack, {__index = Item })
 end
 -- Functions --
 
