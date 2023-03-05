@@ -6,6 +6,10 @@ local CraftingRecipeStore = {}
 --- @param itemFilter Filter
 --- @return CraftingRecipe[]
 function CraftingRecipeStore:getRecipes(itemFilter)
+    if not itemFilter then
+        return self.recipes
+    end
+
     local matchingRecipes = {}
 
     for _, recipe in pairs(self.recipes) do

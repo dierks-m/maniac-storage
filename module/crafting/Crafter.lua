@@ -5,6 +5,7 @@ local Crafter = {}
 
 --- @param itemFilter Filter
 --- @param count number
+--- @return number The amount of items crafted
 function Crafter:craft(itemFilter, count) end
 
 --- @return Item[]

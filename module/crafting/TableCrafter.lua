@@ -48,7 +48,7 @@ local function retrieveItems(self, items, count, attemptedRecipes)
             if extractedCount == 0 then
                 storeItems(self) -- Cleanup before crafting dependency
 
-                if craftInternal(self, item, count, {table.unpack(attemptedRecipes)}) == 0 then
+                if craftInternal(self, item, count, {table.unpack(attemptedRecipes)}) == 0 and self.itemSystem:craft(item, count) == 0 then
                     return false
                 end
 
@@ -126,6 +126,18 @@ end
 --- @return number The number of actually crafted items
 function TableCrafter:craft(itemFilter, amount)
     return craftInternal(self, itemFilter, amount, {})
+end
+
+--- @return Item[]
+function TableCrafter:getCraftableItems()
+    local recipes = self.recipeStore:getRecipes(nil)
+    local craftableItems = {}
+
+    for _, recipe in pairs(recipes) do
+        craftableItems[#craftableItems + 1] = recipe.guaranteedOutput
+    end
+
+    return craftableItems
 end
 
 --- @param recipeStore CraftingRecipeStore
