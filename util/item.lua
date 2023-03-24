@@ -66,7 +66,7 @@ local function enchantmentsMatch(self, other)
     return true
 end
 
-function Item:matches(other)
+local function matches(self, other)
     -- No need to check display name, tags and item groups, as
     -- the same id (name) will already uniquely identify the item type
 
@@ -98,7 +98,7 @@ end
 
 --- @return Item
 Item.new = function(itemStack)
-    return setmetatable(itemStack, {__index = Item })
+    return setmetatable(itemStack, {__index = Item, __eq = matches})
 end
 -- Functions --
 

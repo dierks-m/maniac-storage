@@ -23,7 +23,7 @@ local function getResultCount(item)
     for i = 1, 16 do
         local slot = turtle.getItemDetail(i)
 
-        if slot and item:matches(slot) then
+        if slot and item == slot then
             itemCount = itemCount + turtle.getItemCount(i)
         end
     end
@@ -108,12 +108,14 @@ craftInternal = function(self, itemFilter, amount, attemptedRecipes)
     end
 
     local craftedAmount = 0
+    local craftedThisRound
 
     for _, recipe in ipairs(recipes) do
         attemptedRecipes[#attemptedRecipes + 1] = recipe
-        craftedAmount = craftedAmount + craftRecipe(self, recipe, amount - craftedAmount, attemptedRecipes)
+        craftedThisRound = craftRecipe(self, recipe, amount - craftedAmount, attemptedRecipes)
+        craftedAmount = craftedAmount + craftedThisRound
 
-        if craftedAmount >= amount then
+        if craftedAmount >= amount or craftedThisRound == 0 then
             break
         end
     end

@@ -43,7 +43,7 @@ end
 --- @param item Item
 local function addItemToList(list, item)
     for _, listItem in pairs(list) do
-        if listItem:matches(item) then
+        if listItem == item then
             listItem.count = listItem.count + item.count
             return
         end

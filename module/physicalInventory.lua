@@ -40,7 +40,7 @@ end
 --- @param item Item
 local function addItemToList(list, item)
     for _, listItem in pairs(list) do
-        if listItem:matches(item) then
+        if listItem == item then
             listItem.count = listItem.count + item.count
             return
         end
@@ -95,7 +95,7 @@ local function itemFits(self, item)
     end
 
     for _, slotContent in pairs(self.cache) do
-        if slotContent:matches(item) and slotContent.count < slotContent.maxCount then
+        if slotContent == item and slotContent.count < slotContent.maxCount then
             return true
         end
     end
