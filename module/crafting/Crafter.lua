@@ -8,5 +8,6 @@ local Crafter = {}
 --- @return number The amount of items crafted
 function Crafter:craft(itemFilter, count) end
 
---- @return Item[]
+--- Get a list of all craftable items
+--- @return Set<Item>
 function Crafter:getCraftableItems() end

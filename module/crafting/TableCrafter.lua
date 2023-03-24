@@ -1,3 +1,4 @@
+local Set = require("util.Set")
 local Item = require("util.item")
 
 --- @class TableCrafter : Crafter
@@ -130,13 +131,14 @@ function TableCrafter:craft(itemFilter, amount)
     return craftInternal(self, itemFilter, amount, {})
 end
 
---- @return Item[]
+--- @return Set<Item>
 function TableCrafter:getCraftableItems()
     local recipes = self.recipeStore:getRecipes(nil)
-    local craftableItems = {}
+    --- @type Set<Item>
+    local craftableItems = Set.new()
 
     for _, recipe in pairs(recipes) do
-        craftableItems[#craftableItems + 1] = recipe.guaranteedOutput
+        craftableItems:add(recipe.guaranteedOutput)
     end
 
     return craftableItems
