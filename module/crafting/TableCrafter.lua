@@ -24,7 +24,7 @@ local function getResultCount(item)
     for i = 1, 16 do
         local slot = turtle.getItemDetail(i)
 
-        if slot and item == slot then
+        if slot and item == Item.new(slot) then
             itemCount = itemCount + turtle.getItemCount(i)
         end
     end
