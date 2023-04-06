@@ -27,15 +27,67 @@ function Set:toList()
 end
 
 --- @param other Set<T>
+--- @return Set<T>
 function Set:unite(other)
+    local newSet = Set.new()
+
     for _, value in pairs(other:toList()) do
-        self:add(value)
+        newSet:add(value)
     end
+
+    for _, value in pairs(self:toList()) do
+        newSet:add(value)
+    end
+
+    return newSet
 end
 
+--- @param other Set<T>
 --- @return Set<T>
-function Set.new()
-    return setmetatable({ values = {} }, { __index = Set })
+function Set:intersect(other)
+    local newSet = Set.new()
+
+    for _, value in pairs(other:toList()) do
+        if contains(self, value) then
+            newSet:add(value)
+        end
+    end
+
+    return newSet
+end
+
+--- @generic T
+--- @param other Set<T>
+--- @return Set<T> All elements that are not contained in other
+function Set:difference(other)
+    local newSet = Set.new()
+
+    for _,value in pairs(self:toList()) do
+        if not contains(other, value) then
+            newSet:add(value)
+        end
+    end
+
+    return newSet
+end
+
+--- @generic T
+--- @return Set<T>
+function Set:clone()
+    local newSet = Set.new()
+
+    for _, value in pairs(self:toList()) do
+        newSet:add(value)
+    end
+
+    return newSet
+end
+
+--- @generic T
+--- @vararg T
+--- @return Set<T>
+function Set.new(...)
+    return setmetatable({ values = {...} }, { __index = Set })
 end
 
 return Set
