@@ -90,8 +90,14 @@ end
 --- @param self PhysicalInventory
 --- @param item Item
 local function itemFits(self, item)
-    if not self.limitCheck or #self.cache < self.slotCount then
+    if not self.limitCheck then
         return true
+    end
+
+    for i = 1, self.slotCount do
+        if not self.cache[i] then
+            return true
+        end
     end
 
     for _, slotContent in pairs(self.cache) do
