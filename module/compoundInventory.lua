@@ -1,16 +1,83 @@
 -- Variables --
---- @class PrioritizedInventory
---- @field inventory Inventory
---- @field priority number
-local PrioritizedInventory
-
 --- @class CompoundInventory
---- @field inventoryList PrioritizedInventory[]
+--- @field inventoryList table<number, Inventory[]>
 local CompoundInventory = {}
 -- Variables --
 
 
 -- Functions --
+--- @param itemList Item[]
+--- @param itemFilter Filter
+local function countItems(itemList, itemFilter)
+    local count = 0
+
+    for _, item in pairs(itemList) do
+        if itemFilter:matches(item) then
+            count = count + item.count
+        end
+    end
+
+    return count
+end
+
+--- @param inventoryList Inventory[]
+--- @param item Filter
+local function itemAmountAsc(inventoryList, item)
+    local iteratedKeys = {}
+
+    --- @param tbl Inventory[]
+    --- @param key number
+    return function(tbl, key)
+        if key then
+            iteratedKeys[key] = true
+        end
+
+        local minKey, minValue, minCount
+        for k, v in pairs(tbl) do
+            local currCount = countItems(v:getItems(), item)
+
+            if (not (minKey or minValue) or currCount < minCount) and not iteratedKeys[k] then
+                minKey, minValue, minCount = k, v, currCount
+            end
+        end
+
+        if minKey then
+            return minKey, minValue
+        end
+
+        return nil
+    end, inventoryList, nil
+end
+
+--- @param inventoryList Inventory[]
+--- @param item Filter
+local function itemAmountDesc(inventoryList, item)
+    local iteratedKeys = {}
+
+    --- @param tbl Inventory[]
+    --- @param key number
+    return function(tbl, key)
+        if key then
+            iteratedKeys[key] = true
+        end
+
+        local maxKey, maxValue, maxCount
+        for k, v in pairs(tbl) do
+            local currCount = countItems(v:getItems(), item)
+
+            if (not (maxKey or maxValue) or currCount > maxCount) and not iteratedKeys[k] then
+                maxKey, maxValue, maxCount = k, v, currCount
+            end
+        end
+
+        if maxKey then
+            return maxKey, maxValue
+        end
+
+        return nil
+    end, inventoryList, nil
+end
+
 --- Adds an item to a list of items, increasing the count if the item
 --- already exists in that list
 --- @param list Item[]
@@ -28,16 +95,18 @@ local function addItemToList(list, item)
 end
 
 --- Compiles a list of items from a list of stacks
---- @param inventories PrioritizedInventory[]
+--- @param inventoryMap table<number, Inventory[]>
 --- @return Item[]
-local function compileItemList(inventories)
+local function compileItemList(inventoryMap)
     local items = {}
 
-    for _, inventory in pairs(inventories) do
-        local inventoryItems = inventory.inventory:getItems()
+    for _, inventoryList in pairs(inventoryMap) do
+        for _, inventory in pairs(inventoryList) do
+            local inventoryItems = inventory:getItems()
 
-        for _, item in pairs(inventoryItems) do
-            addItemToList(items, item)
+            for _, item in pairs(inventoryItems) do
+                addItemToList(items, item)
+            end
         end
     end
 
@@ -56,13 +125,15 @@ end
 function CompoundInventory:extract(targetName, targetSlot, filter, amount)
     local totalTransferred = 0
 
-    for _, inventory in pairs(self.inventoryList) do
-        if amount - totalTransferred <= 0 then
-            return totalTransferred
-        end
+    for _, inventoryList in pairs(self.inventoryList) do
+        for _, inventory in itemAmountAsc(inventoryList, filter) do
+            if amount - totalTransferred <= 0 then
+                return totalTransferred
+            end
 
-        local transferredItems = inventory.inventory:pushItem(targetName, targetSlot, filter, math.min(amount, amount-totalTransferred))
-        totalTransferred = totalTransferred + transferredItems
+            local transferredItems = inventory:pushItem(targetName, targetSlot, filter, math.min(amount, amount-totalTransferred))
+            totalTransferred = totalTransferred + transferredItems
+        end
     end
 
     return totalTransferred
@@ -77,13 +148,15 @@ end
 function CompoundInventory:insert(sourceName, sourceSlot, item, amount)
     local totalTransferred = 0
 
-    for _, inventory in pairs(self.inventoryList) do
-        if amount - totalTransferred <= 0 then
-            return totalTransferred
-        end
+    for _, inventoryList in pairs(self.inventoryList) do
+        for _, inventory in itemAmountDesc(inventoryList) do
+            if amount - totalTransferred <= 0 then
+                return totalTransferred
+            end
 
-        local transferredItems = inventory.inventory:pullItem(sourceName, sourceSlot, item, math.min(amount, amount-totalTransferred))
-        totalTransferred = totalTransferred + transferredItems
+            local transferredItems = inventory:pullItem(sourceName, sourceSlot, item, math.min(amount, amount-totalTransferred))
+            totalTransferred = totalTransferred + transferredItems
+        end
     end
 
     return totalTransferred
@@ -92,20 +165,13 @@ end
 --- @param inventory Inventory
 --- @param priority number
 function CompoundInventory:addInventory(inventory, priority)
-    local position = 1
-
-    for k, invMap in ipairs(self.inventoryList) do
-        if invMap.priority > priority then
-            position = k + 1
-        else
-            break
-        end
+    if not self.inventoryList[priority] then
+        self.inventoryList[priority] = {}
     end
 
-    table.insert(self.inventoryList, position, {inventory=inventory, priority=priority})
+    table.insert(self.inventoryList[priority], inventory)
 end
 
---- @param inventories Inventory[]
 --- @return CompiledInventory
 local function newCompiledInventory()
     local compiledInventory = {
