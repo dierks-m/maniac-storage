@@ -5,6 +5,7 @@
 --- @field nbt string
 --- @field enchantments Enchantment[]
 --- @field itemGroups ItemGroup[]
+--- @field tags table<string, boolean>
 local ItemFilter = {}
 -- Variables --
 
