@@ -1,4 +1,6 @@
 -- Variables --
+local util = require("util.util")
+
 --- @class CompoundInventory
 --- @field inventoryList table<number, Inventory[]>
 local CompoundInventory = {}
@@ -139,7 +141,7 @@ end
 function CompoundInventory:extract(targetName, targetSlot, filter, amount)
     local totalTransferred = 0
 
-    for _, inventoryList in pairs(self.inventoryList) do
+    for _, inventoryList in util.ipairsReverse(self.inventoryList) do
         for _, inventory in itemAmountAsc(inventoryList, filter) do
             if amount - totalTransferred <= 0 then
                 return totalTransferred
@@ -162,7 +164,7 @@ end
 function CompoundInventory:insert(sourceName, sourceSlot, item, amount)
     local totalTransferred = 0
 
-    for _, inventoryList in pairs(self.inventoryList) do
+    for _, inventoryList in util.ipairsReverse(self.inventoryList) do
         for _, inventory in itemAmountDesc(inventoryList, item) do
             if amount - totalTransferred <= 0 then
                 return totalTransferred

@@ -8,7 +8,7 @@
 --- @field displayName string
 --- @field name string
 
---- @class Item : Filter
+--- @class Item
 --- @field count number
 --- @field maxCount number
 --- @field displayName string
