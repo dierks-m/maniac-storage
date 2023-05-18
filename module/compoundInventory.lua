@@ -8,11 +8,25 @@ local CompoundInventory = {}
 -- Functions --
 --- @param itemList Item[]
 --- @param itemFilter Filter
-local function countItems(itemList, itemFilter)
+local function countByFilter(itemList, itemFilter)
     local count = 0
 
     for _, item in pairs(itemList) do
         if itemFilter:matches(item) then
+            count = count + item.count
+        end
+    end
+
+    return count
+end
+
+--- @param itemList Item[]
+--- @param itemFilter Item
+local function countByItem(itemList, itemFilter)
+    local count = 0
+
+    for _, item in pairs(itemList) do
+        if itemFilter == item then
             count = count + item.count
         end
     end
@@ -34,7 +48,7 @@ local function itemAmountAsc(inventoryList, item)
 
         local minKey, minValue, minCount
         for k, v in pairs(tbl) do
-            local currCount = countItems(v:getItems(), item)
+            local currCount = countByFilter(v:getItems(), item)
 
             if (not (minKey or minValue) or currCount < minCount) and not iteratedKeys[k] then
                 minKey, minValue, minCount = k, v, currCount
@@ -50,7 +64,7 @@ local function itemAmountAsc(inventoryList, item)
 end
 
 --- @param inventoryList Inventory[]
---- @param item Filter
+--- @param item Item
 local function itemAmountDesc(inventoryList, item)
     local iteratedKeys = {}
 
@@ -63,7 +77,7 @@ local function itemAmountDesc(inventoryList, item)
 
         local maxKey, maxValue, maxCount
         for k, v in pairs(tbl) do
-            local currCount = countItems(v:getItems(), item)
+            local currCount = countByItem(v:getItems(), item)
 
             if (not (maxKey or maxValue) or currCount > maxCount) and not iteratedKeys[k] then
                 maxKey, maxValue, maxCount = k, v, currCount
@@ -149,7 +163,7 @@ function CompoundInventory:insert(sourceName, sourceSlot, item, amount)
     local totalTransferred = 0
 
     for _, inventoryList in pairs(self.inventoryList) do
-        for _, inventory in itemAmountDesc(inventoryList) do
+        for _, inventory in itemAmountDesc(inventoryList, item) do
             if amount - totalTransferred <= 0 then
                 return totalTransferred
             end
