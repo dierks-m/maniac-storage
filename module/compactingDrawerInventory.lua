@@ -141,7 +141,7 @@ function CompactingDrawerInventory:setLimitCheck()
 end
 
 --- @return CompactingDrawerInventory
-local function newInventory(name)
+function CompactingDrawerInventory.new(name)
     if not validInventoryTypes[peripheral.getType(name)] then
         error("U stoopid, no valid compating drawer!")
     end
@@ -154,6 +154,4 @@ local function newInventory(name)
 end
 -- Functions --
 
-return {
-    new = newInventory
-}
+return CompactingDrawerInventory
