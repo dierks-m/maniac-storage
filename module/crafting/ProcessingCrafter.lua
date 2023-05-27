@@ -1,4 +1,4 @@
-local Item = require("util.item")
+local Item = require("util.Item")
 local Set = require("util.Set")
 
 --- @class ProcessingCrafter : Crafter

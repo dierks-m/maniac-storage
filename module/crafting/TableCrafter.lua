@@ -1,5 +1,5 @@
 local Set = require("util.Set")
-local Item = require("util.item")
+local Item = require("util.Item")
 
 --- @class TableCrafter : Crafter
 --- @field recipeStore CraftingRecipeStore

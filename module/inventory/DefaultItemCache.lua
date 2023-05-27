@@ -1,4 +1,4 @@
-local Item = require("util.item")
+local Item = require("util.Item")
 
 --- @class DefaultItemCache : ItemCache
 --- @field inventory

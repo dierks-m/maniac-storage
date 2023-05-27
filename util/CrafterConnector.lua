@@ -1,5 +1,5 @@
 local Set = require("util.Set")
-local Item = require("util.item")
+local Item = require("util.Item")
 
 --- @class CrafterConnector : Crafter
 --- @field remoteId number The computer's ID
