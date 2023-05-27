@@ -114,17 +114,25 @@ end
 --- @param inventoryMap table<number, Inventory[]>
 --- @return Item[]
 local function compileItemList(inventoryMap)
+    local getItemFunctions = {}
     local items = {}
 
     for _, inventoryList in pairs(inventoryMap) do
         for _, inventory in pairs(inventoryList) do
-            local inventoryItems = inventory:getItems()
+            table.insert(
+                    getItemFunctions,
+                    function()
+                        local inventoryItems = inventory:getItems()
 
-            for _, item in pairs(inventoryItems) do
-                addItemToList(items, item)
-            end
+                        for _, item in pairs(inventoryItems) do
+                            addItemToList(items, item)
+                        end
+                    end
+            )
         end
     end
+
+    parallel.waitForAll(table.unpack(getItemFunctions))
 
     return items
 end
