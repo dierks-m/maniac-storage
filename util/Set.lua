@@ -3,7 +3,7 @@
 --- @field values T[]
 local Set = {}
 
-local function contains(self, value)
+function Set:contains(value)
     for _, v in pairs(self.values) do
         -- For tables, this requires the __eq metamethod
         if value == v then
@@ -16,7 +16,7 @@ end
 
 --- @param value T
 function Set:add(value)
-    if not contains(self, value) then
+    if not Set.contains(self, value) then
         self.values[#self.values + 1] = value
     end
 end
@@ -48,7 +48,7 @@ function Set:intersect(other)
     local newSet = Set.new()
 
     for _, value in pairs(other:toList()) do
-        if contains(self, value) then
+        if Set.contains(self, value) then
             newSet:add(value)
         end
     end
@@ -63,7 +63,7 @@ function Set:difference(other)
     local newSet = Set.new()
 
     for _,value in pairs(self:toList()) do
-        if not contains(other, value) then
+        if not Set.contains(other, value) then
             newSet:add(value)
         end
     end
