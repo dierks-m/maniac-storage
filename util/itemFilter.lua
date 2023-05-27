@@ -1,6 +1,7 @@
 -- Variables --
 --- @class ItemFilter : Filter
 --- @field displayName string
+--- @field displayNamePattern string
 --- @field name string
 --- @field nbt string
 --- @field enchantments Enchantment[]
@@ -51,14 +52,10 @@ local function levelMatches(filter, enchantment)
     return not filter.level or filter.level == enchantment.level
 end
 
---- @param item Item
+--- @param enchantments Enchantment[]
 --- @param enchantmentFilter Enchantment
-local function enchantmentMatches(item, enchantmentFilter)
-    if not item.enchantments then
-        return false
-    end
-
-    for _, enchantment in pairs(item.enchantments) do
+local function hasEnchantment(enchantments, enchantmentFilter)
+    for _, enchantment in pairs(enchantments) do
         if displayNameMatches(enchantmentFilter, enchantment)
                 and displayNamePatternMatches(enchantmentFilter, enchantment)
                 and levelMatches(enchantmentFilter, enchantment) then
@@ -74,10 +71,12 @@ end
 local function enchantmentsMatch(filter, stack)
     if not filter.enchantments then
         return true
+    elseif not stack.enchantments then
+        return false
     end
 
     for _, enchantment in pairs(filter.enchantments) do
-        if not enchantmentMatches(stack, enchantment) then
+        if not hasEnchantment(stack.enchantments, enchantment) then
             return false
         end
     end
@@ -85,8 +84,10 @@ local function enchantmentsMatch(filter, stack)
     return true
 end
 
-local function hasItemGroup(stack, group)
-    for _, g in pairs(stack.itemGroups) do
+--- @param itemGroups ItemGroup[]
+--- @param group ItemGroup
+local function hasItemGroup(itemGroups, group)
+    for _, g in pairs(itemGroups) do
         if g.id == group.id then
             return true
         end
@@ -95,13 +96,15 @@ local function hasItemGroup(stack, group)
     return false
 end
 
+--- @param filter ItemFilter
+--- @param stack Item
 local function itemGroupsMatch(filter, stack)
     if not filter.itemGroups then
         return true
     end
 
-    for _, group in pairs(stack.itemGroups) do
-        if not hasItemGroup(filter, group) then
+    for _, group in pairs(filter.itemGroups) do
+        if not hasItemGroup(stack.itemGroups, group) then
             return false
         end
     end
@@ -122,7 +125,7 @@ end
 
 --- @return ItemFilter
 ItemFilter.new = function(filter)
-    return setmetatable(filter, {__index = ItemFilter })
+    return setmetatable(filter, { __index = ItemFilter })
 end
 -- Functions --
 
