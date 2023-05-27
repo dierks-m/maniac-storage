@@ -196,7 +196,7 @@ function CompoundInventory:addInventory(inventory, priority)
     table.insert(self.inventoryList[priority], inventory)
 end
 
---- @return CompiledInventory
+--- @return CompoundInventory
 local function newCompiledInventory()
     local compiledInventory = {
         inventoryList = {}

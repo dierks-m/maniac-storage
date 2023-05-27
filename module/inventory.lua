@@ -1,5 +1,3 @@
-local item = require("util.item")
-
 --- Inventory class
 --- @class Inventory
 local Inventory = {}
@@ -25,6 +23,3 @@ function Inventory:getItems() end
 
 --- @param filter Filter
 function Inventory:setFilter(filter) end
-
---- @param value boolean
-function Inventory:setLimitCheck(value) end
