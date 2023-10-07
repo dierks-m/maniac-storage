@@ -11,8 +11,11 @@ local craftInternal
 local function storeItems(self)
     for i = 1, 16 do
         if turtle.getItemCount(i) > 0 then
-            local itemDetail = turtle.getItemDetail(i)
-            self.itemSystem:insert(i, Item.new(itemDetail), turtle.getItemCount(i))
+            self.itemSystem:insertUnknown(i, turtle.getItemCount(i))
+
+            if turtle.getItemCount(i) > 0 then
+                error("Could not insert slot " .. i .. " into item system")
+            end
         end
     end
 end

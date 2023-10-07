@@ -101,7 +101,7 @@ end
 --- @param inventoryName string
 --- @param itemCache ItemCache
 --- @param sizeChecker SizeChecker
---- @return PhysicalInventoryNew
+--- @return PhysicalInventory
 function PhysicalInventory.new(inventoryName, itemCache, sizeChecker)
     local inventory = {
         inventory = peripheral.wrap(inventoryName),

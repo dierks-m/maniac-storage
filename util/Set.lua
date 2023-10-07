@@ -62,7 +62,7 @@ end
 function Set:difference(other)
     local newSet = Set.new()
 
-    for _,value in pairs(self:toList()) do
+    for _, value in pairs(self:toList()) do
         if not Set.contains(other, value) then
             newSet:add(value)
         end

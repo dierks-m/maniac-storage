@@ -55,6 +55,25 @@ function ItemServerConnector:insert(sourceSlot, item, count)
     return response.result[1]
 end
 
+function ItemServerConnector:insertUnknown(sourceSlot, count)
+    rednet.broadcast({
+        command = "insertUnknown",
+        args = table.pack(
+                self.localInventoryName,
+                sourceSlot,
+                count
+        )
+    }, PROTOCOL_ITEM_REQUEST)
+
+    local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+
+    if not response.success then
+        return 0
+    end
+
+    return response.result[1]
+end
+
 --- @return Item[]
 function ItemServerConnector:getItems()
     rednet.broadcast({
