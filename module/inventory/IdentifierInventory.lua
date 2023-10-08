@@ -22,13 +22,10 @@ function IdentifierInventory:identifyItem(sourceName, sourceSlot, amount)
         end
     end
 
-    print("Target slot is " .. targetSlot)
-
     if not targetSlot then
         error("No available slot for item identification")
     end
 
-    print("Trying to identify " .. sourceName .. "[" .. sourceSlot .. "] in slot " .. targetSlot)
     self.inventory.pullItems(sourceName, sourceSlot, amount, targetSlot)
 
     return Item.new(self.inventory.getItemDetail(targetSlot)), targetSlot
