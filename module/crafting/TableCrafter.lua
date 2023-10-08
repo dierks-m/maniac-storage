@@ -127,7 +127,7 @@ craftInternal = function(self, itemFilter, amount, attemptedRecipes)
         craftedThisRound = craftRecipe(self, recipe, amount - craftedAmount, attemptedRecipes)
         craftedAmount = craftedAmount + craftedThisRound
 
-        if craftedAmount >= amount or craftedThisRound == 0 then
+        if craftedAmount >= amount then
             break
         end
     end
