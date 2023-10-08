@@ -4,6 +4,7 @@
 --- @field displayNamePattern string
 --- @field name string
 --- @field nbt string
+--- @field damage number
 --- @field enchantments Enchantment[]
 --- @field itemGroups ItemGroup[]
 --- @field tags table<string, boolean>
@@ -26,6 +27,10 @@ end
 
 local function nbtMatches(filter, stack)
     return not filter.nbt or filter.nbt == stack.nbt
+end
+
+local function damageMatches(filter, stack)
+    return not filter.damage or filter.damage == stack.damage
 end
 
 local function tagsMatch(filter, stack)
@@ -118,6 +123,7 @@ function ItemFilter:matches(item)
             and displayNamePatternMatches(self, item)
             and nameMatches(self, item)
             and nbtMatches(self, item)
+            and damageMatches(self, item)
             and tagsMatch(self, item)
             and enchantmentsMatch(self, item)
             and itemGroupsMatch(self, item)
