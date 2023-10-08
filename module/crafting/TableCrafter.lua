@@ -1,5 +1,5 @@
 local Set = require("util.Set")
-local Item = require("util.Item")
+local ItemStub = require("module.crafting.ItemStub")
 
 --- @class TableCrafter : Crafter
 --- @field recipeStore CraftingRecipeStore
@@ -20,14 +20,14 @@ local function storeItems(self)
     end
 end
 
---- @param item Item
+--- @param item ItemStub
 local function getResultCount(item)
     local itemCount = 0
 
     for i = 1, 16 do
         local slot = turtle.getItemDetail(i)
 
-        if slot and item == Item.new(slot) then
+        if slot and item == ItemStub.new(slot) then
             itemCount = itemCount + turtle.getItemCount(i)
         end
     end
@@ -80,8 +80,16 @@ local function craftRecipe(self, recipe, amount, attemptedRecipes)
             break
         end
 
-        turtle.craft()
-        craftedAmount = craftedAmount + getResultCount(recipe.guaranteedOutput)
+        local successful = turtle.craft()
+        local resultingItems = getResultCount(recipe.guaranteedOutput)
+
+        if not successful then
+            error("Failed to craft " .. recipe.guaranteedOutput.name)
+        elseif resultingItems <= 0 then
+            error("Crafting output does not match expected output.")
+        end
+
+        craftedAmount = craftedAmount + resultingItems
         storeItems(self)
     end
 
