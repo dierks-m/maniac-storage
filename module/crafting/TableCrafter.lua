@@ -38,8 +38,37 @@ end
 --- @param self TableCrafter
 --- @param items table<number, ItemFilter>
 --- @param count number
+local function itemsAvailableInSystem(self, items, count)
+    local sysItems = self.itemSystem:getItems()
+
+    for _, itemFilter in pairs(items) do
+        local itemFound = false
+
+        for _, item in pairs(sysItems) do
+            if itemFilter:matches(item) then
+                itemFound = item.count >= count
+                item.count = item.count - math.min(item.count, count)
+                break
+            end
+        end
+
+        if not itemFound then
+            return false
+        end
+    end
+
+    return true
+end
+
+--- @param self TableCrafter
+--- @param items table<number, ItemFilter>
+--- @param count number
 --- @param attemptedRecipes CraftingRecipe[]
 local function retrieveItems(self, items, count, attemptedRecipes)
+    if not itemsAvailableInSystem(self, items, count) then
+        return false
+    end
+
     local allItemsInserted
 
     repeat
