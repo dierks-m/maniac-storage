@@ -38,24 +38,38 @@ end
 --- @param self TableCrafter
 --- @param items table<number, ItemFilter>
 --- @param count number
-local function itemsAvailableInSystem(self, items, count)
-    local sysItems = self.itemSystem:getItems()
+--- @param attemptedRecipes CraftingRecipe[]
+local function itemsAvailableInSystem(self, items, count, attemptedRecipes)
+    local allSlotsValidated = false
 
-    for _, itemFilter in pairs(items) do
-        local itemFound = false
+    repeat
+        local sysItems = self.itemSystem:getItems()
+        allSlotsValidated = true
 
-        for _, item in pairs(sysItems) do
-            if itemFilter:matches(item) then
-                itemFound = item.count >= count
-                item.count = item.count - math.min(item.count, count)
+        for _, itemFilter in pairs(items) do
+            local missingItems = count
+
+            for _, item in pairs(sysItems) do
+                if itemFilter:matches(item) then
+                    item.count = math.max(0, item.count - missingItems)
+                    missingItems = missingItems - math.min(missingItems, item.count)
+                end
+            end
+
+            if missingItems > 0 then
+                missingItems = math.max(0, missingItems - craftInternal(self, itemFilter, missingItems, {table.unpack(attemptedRecipes)}))
+                missingItems = missingItems > 0 and math.max(0, missingItems - self.itemSystem:craft(itemFilter, missingItems)) or missingItems
+
+                if missingItems > 0 then
+                    return false
+                end
+
+                -- Crafting might have changed items in system, re-validate all slots
+                allSlotsValidated = false
                 break
             end
         end
-
-        if not itemFound then
-            return false
-        end
-    end
+    until allSlotsValidated
 
     return true
 end
@@ -65,7 +79,7 @@ end
 --- @param count number
 --- @param attemptedRecipes CraftingRecipe[]
 local function retrieveItems(self, items, count, attemptedRecipes)
-    if not itemsAvailableInSystem(self, items, count) then
+    if not itemsAvailableInSystem(self, items, count, attemptedRecipes) then
         return false
     end
 
