@@ -51,8 +51,9 @@ local function itemsAvailableInSystem(self, items, count, attemptedRecipes)
 
             for _, item in pairs(sysItems) do
                 if itemFilter:matches(item) then
-                    item.count = math.max(0, item.count - missingItems)
-                    missingItems = missingItems - math.min(missingItems, item.count)
+                    local available = item.count
+                    item.count = math.max(0, available - missingItems)
+                    missingItems = missingItems - math.min(missingItems, available)
                 end
             end
 
