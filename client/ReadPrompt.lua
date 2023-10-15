@@ -118,6 +118,9 @@ function ReadPrompt:processEvent(...)
     end
 end
 
+--- @param text string
+--- @param win
+--- @param uniDirectionalScroll boolean
 --- @return ReadPrompt
 function ReadPrompt.new(text, win, uniDirectionalScroll)
     assert(text == nil or type(text) == "string", "Text specified must be given in string form")
