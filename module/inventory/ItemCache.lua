@@ -11,5 +11,9 @@ function ItemCache:add(item, amount) end
 --- @param count number
 function ItemCache:remove(slot, count) end
 
+--- @param slot number
+--- @return number
+function ItemCache:getItemCount(slot) end
+
 --- @return table<number, Item>
 function ItemCache:getCacheData() end

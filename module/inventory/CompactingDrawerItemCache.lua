@@ -41,6 +41,18 @@ function CompactingDrawerItemCache:remove()
     updateChangedSlots(self)
 end
 
+function CompactingDrawerItemCache:getItemCount(slot)
+    if not self.itemCache then
+        self:initialize()
+    end
+
+    if not self.itemCache[slot] then
+        return 0
+    end
+
+    return self.itemCache[slot].count
+end
+
 function CompactingDrawerItemCache:getCacheData()
     if not self.itemCache then
         self:initialize()

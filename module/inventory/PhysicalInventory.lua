@@ -63,16 +63,22 @@ function PhysicalInventory:pushItem(targetName, targetSlot, filter, amount)
         end
 
         if filter:matches(item) then
-            local transferredAmount = self.inventory.pushItems(
-                    targetName,
-                    slot,
-                    amount,
-                    targetSlot
-            )
+            while amount > 0 and self.cache:getItemCount(slot) > 0 do
+                local transferredAmount = self.inventory.pushItems(
+                        targetName,
+                        slot,
+                        amount,
+                        targetSlot
+                )
 
-            self.cache:remove(slot, transferredAmount)
-            totalTransferred = totalTransferred + transferredAmount
-            amount = amount - transferredAmount
+                if transferredAmount <= 0 then
+                    break
+                end
+
+                self.cache:remove(slot, transferredAmount)
+                totalTransferred = totalTransferred + transferredAmount
+                amount = amount - transferredAmount
+            end
         end
     end
 

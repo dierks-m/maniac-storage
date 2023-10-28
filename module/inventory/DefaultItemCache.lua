@@ -40,6 +40,18 @@ function DefaultItemCache:remove(slot, count)
     self.itemCache[slot].count = self.itemCache[slot].count - count
 end
 
+function DefaultItemCache:getItemCount(slot)
+    if not self.itemCache then
+        self:initialize()
+    end
+
+    if not self.itemCache[slot] then
+        return 0
+    end
+
+    return self.itemCache[slot].count
+end
+
 function DefaultItemCache:getCacheData()
     if not self.itemCache then
         self:initialize()

@@ -69,6 +69,18 @@ function ChestItemCache:remove(slot, count)
     self.itemCache[slot].count = self.itemCache[slot].count - count
 end
 
+function ChestItemCache:getItemCount(slot)
+    if not self.itemCache then
+        self:initialize()
+    end
+
+    if not self.itemCache[slot] then
+        return 0
+    end
+
+    return self.itemCache[slot].count
+end
+
 function ChestItemCache:getCacheData()
     if not self.itemCache then
         self:initialize()
