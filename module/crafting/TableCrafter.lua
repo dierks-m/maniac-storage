@@ -116,9 +116,12 @@ end
 --- @return number The number of items crafted
 local function craftRecipe(self, recipe, amount, attemptedRecipes)
     local craftedAmount = 0
+    local maxCraftCount = recipe.guaranteedOutput.maxCount or amount
 
     while craftedAmount < amount do
-        local craftAmount = math.ceil((amount - craftedAmount) / recipe.guaranteedOutput.count)
+        local craftAmount = math.ceil(
+                math.min(amount - craftedAmount, maxCraftCount) / recipe.guaranteedOutput.count
+        )
 
         if not retrieveItems(self, recipe.input, craftAmount, attemptedRecipes) then
             break
