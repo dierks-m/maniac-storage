@@ -41,7 +41,7 @@ function ThreadPool:join(thread)
         end
     end
 
-    error("Can only join on an added thread", 2)
+    self:add(thread)
 end
 
 --- Runs all threads until one of the joined threads dies.
