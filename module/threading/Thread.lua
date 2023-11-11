@@ -27,6 +27,8 @@ end
 function Thread:start()
     self.running = true
     self:resume()
+    
+    return self
 end
 
 --- @param func function
