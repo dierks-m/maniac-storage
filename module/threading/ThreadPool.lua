@@ -44,6 +44,7 @@ function ThreadPool:join(thread)
     error("Can only join on an added thread", 2)
 end
 
+--- Runs all threads until one of the joined threads dies.
 function ThreadPool:run()
     while allJoinedThreadsAlive(self) do
         local event = { coroutine.yield() }
