@@ -1,3 +1,4 @@
+local UUID = require("util.UUID")
 local Item = require("util.Item")
 
 --- @class ItemServerConnector
@@ -9,10 +10,22 @@ local READINESS_RESPONSE = "PROTOCOL_ITEM_SERVER_READINESS_RESPONSE"
 local PROTOCOL_ITEM_REQUEST = "PROTOCOL_ITEM_REQUEST"
 local PROTOCOL_REQUEST_RESPONSE = "PROTOCOL_REQUEST_RESPONSE"
 
+
+local function waitForResponse(requestId)
+    while true do
+        local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+
+        if response.requestId == requestId then
+            return response
+        end
+    end
+end
+
 --- @param targetSlot number
 --- @param itemFilter ItemFilter
 --- @param count number
 function ItemServerConnector:extract(targetSlot, itemFilter, count)
+    local requestId = UUID.generate()
     rednet.broadcast({
         command = "extract",
         args = table.pack(
@@ -20,10 +33,11 @@ function ItemServerConnector:extract(targetSlot, itemFilter, count)
                 targetSlot,
                 itemFilter,
                 count
-        )
+        ),
+        requestId = requestId
     }, PROTOCOL_ITEM_REQUEST)
 
-    local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+    local response = waitForResponse(requestId)
 
     if not response.success then
         return 0
@@ -36,6 +50,7 @@ end
 --- @param item Item
 --- @param count number
 function ItemServerConnector:insert(sourceSlot, item, count)
+    local requestId = UUID.generate()
     rednet.broadcast({
         command = "insert",
         args = table.pack(
@@ -43,10 +58,11 @@ function ItemServerConnector:insert(sourceSlot, item, count)
                 sourceSlot,
                 item,
                 count
-        )
+        ),
+        requestId = requestId
     }, PROTOCOL_ITEM_REQUEST)
 
-    local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+    local response = waitForResponse(requestId)
 
     if not response.success then
         return 0
@@ -56,16 +72,18 @@ function ItemServerConnector:insert(sourceSlot, item, count)
 end
 
 function ItemServerConnector:insertUnknown(sourceSlot, count)
+    local requestId = UUID.generate()
     rednet.broadcast({
         command = "insertUnknown",
         args = table.pack(
                 self.localInventoryName,
                 sourceSlot,
                 count
-        )
+        ),
+        requestId = requestId
     }, PROTOCOL_ITEM_REQUEST)
 
-    local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+    local response = waitForResponse(requestId)
 
     if not response.success then
         return 0
@@ -76,11 +94,13 @@ end
 
 --- @return Item[]
 function ItemServerConnector:getItems()
+    local requestId = UUID.generate()
     rednet.broadcast({
-        command = "getItems"
+        command = "getItems",
+        requestId = requestId
     }, PROTOCOL_ITEM_REQUEST)
 
-    local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+    local response = waitForResponse(requestId)
 
     if not response.success then
         return {}
@@ -100,12 +120,14 @@ end
 --- @param count number
 --- @return number
 function ItemServerConnector:craft(itemFilter, count)
+    local requestId = UUID.generate()
     rednet.broadcast({
         command = "craft",
-        args = {itemFilter, count}
+        args = {itemFilter, count},
+        requestId = requestId
     }, PROTOCOL_ITEM_REQUEST)
 
-    local _, response = rednet.receive(PROTOCOL_REQUEST_RESPONSE)
+    local response = waitForResponse(requestId)
 
     if not response.success then
         return 0
