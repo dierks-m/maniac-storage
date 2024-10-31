@@ -8,7 +8,7 @@
 --- @field displayName string
 --- @field name string
 
---- @class Item
+--- @class Item : Filter
 --- @field count number
 --- @field maxCount number
 --- @field displayName string
@@ -88,12 +88,23 @@ local function tableDeepCopy(input)
     return output
 end
 
+function Item:matches(item)
+    return matches(self, item)
+end
+
 --- @return Item
 function Item:clone()
     local clone = tableDeepCopy(self)
     setmetatable(clone, getmetatable(self))
 
     return clone
+end
+
+--- @param count number
+--- @return Item
+function Item:withCount(count)
+    self.count = count
+    return self
 end
 
 --- @return Item
