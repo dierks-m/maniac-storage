@@ -48,7 +48,7 @@ local function itemsAvailableInSystem(self, items, count, attemptedRecipes)
         allSlotsValidated = true
 
         for _, itemFilter in pairs(items) do
-            local availableItems = sysItems:getMatchingItems(itemFilter):count()
+            local availableItems = sysItems:getMatchingItems(itemFilter):itemCount()
 
             if availableItems < count then
                 availableItems = availableItems + craftInternal(self, itemFilter, count - availableItems, {table.unpack(attemptedRecipes)})

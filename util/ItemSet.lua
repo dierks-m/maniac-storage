@@ -71,7 +71,7 @@ function ItemSet:unite(other)
 end
 
 --- @return number The amount of item stacks contained in this `ItemSet`
-function ItemSet:size()
+function ItemSet:stackCount()
     local count = 0
 
     for _ in pairs(self.items) do
@@ -81,7 +81,7 @@ function ItemSet:size()
     return count
 end
 
-function ItemSet:count()
+function ItemSet:itemCount()
     local totalCount = 0
 
     for _, item in pairs(self.items) do
