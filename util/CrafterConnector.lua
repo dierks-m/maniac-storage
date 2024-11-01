@@ -1,3 +1,4 @@
+local UUID = require("util.UUID")
 local Set = require("util.Set")
 local Item = require("util.Item")
 
@@ -9,15 +10,28 @@ local PROTOCOL_CRAFT_REQUEST = "PROTOCOL_ITEM_REQUEST"
 local PROTOCOL_CRAFT_RESPONSE = "PROTOCOL_REQUEST_RESPONSE"
 local PROTOCOL_CRAFT_READINESS = "PROTOCOL_CRAFT_READINESS"
 
+local function waitForResponse(requestId)
+    while true do
+        local _, response = rednet.receive(PROTOCOL_CRAFT_RESPONSE)
+
+        if response.requestId == requestId then
+            return response
+        end
+    end
+end
+
 function CrafterConnector:craft(itemFilter, count)
+    local requestId = UUID.generate()
     rednet.send(self.remoteId, {
         command = "craft",
-        args = { itemFilter, count }
+        args = { itemFilter, count },
+        requestId = requestId
     }, PROTOCOL_CRAFT_REQUEST)
 
-    local _, response = rednet.receive(PROTOCOL_CRAFT_RESPONSE)
+    local response = waitForResponse(requestId)
 
     if not response.success then
+        print("Error: " .. response.result[1])
         return 0
     end
 
@@ -25,11 +39,13 @@ function CrafterConnector:craft(itemFilter, count)
 end
 
 function CrafterConnector:getCraftableItems()
+    local requestId = UUID.generate()
     rednet.send(self.remoteId, {
-        command = "getCraftableItems"
+        command = "getCraftableItems",
+        requestId = requestId
     }, PROTOCOL_CRAFT_REQUEST)
 
-    local _, response = rednet.receive(PROTOCOL_CRAFT_RESPONSE)
+    local response = waitForResponse(requestId)
 
     if not response or not response.success then
         --- @type Set<Item>
