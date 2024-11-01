@@ -54,7 +54,7 @@ end
 --- @return SmartItemFilter
 function SmartItemFilter.new(pattern)
     pattern = pattern or ""
-    return setmetatable({pattern = pattern}, {__index = SmartItemFilter})
+    return setmetatable({searchPattern = pattern}, {__index = SmartItemFilter})
 end
 
 return SmartItemFilter
