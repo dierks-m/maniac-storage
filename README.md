@@ -1,6 +1,8 @@
 # Maniac Storage
 Creating the ✨tech debt✨ I usually have to deal with.
 
+The name is a homage to an ancient attempt of such an item system using turtles and chests with the same name on ComputerCraft Forums, which no longer seems to exist.
+
 ## Why?
 I lately play with custom mod packs, where I don't include any source of energy and thus also no AppliedEnergistics or RefinedStorage, which I also feel are sort of OP.
 However, manually sorting items and going through chests is *annoying*.\
