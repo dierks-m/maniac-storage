@@ -3,6 +3,7 @@ local Item = require("util.Item")
 local ItemSet = require("util.ItemSet")
 
 --- @class ItemServerConnector
+--- @field serverId number
 --- @field localInventoryName string
 local ItemServerConnector = {}
 
@@ -27,7 +28,7 @@ end
 --- @param count number
 function ItemServerConnector:extract(targetSlot, itemFilter, count)
     local requestId = UUID.generate()
-    rednet.broadcast({
+    rednet.send(self.serverId, {
         command = "extract",
         args = table.pack(
                 self.localInventoryName,
@@ -52,7 +53,7 @@ end
 --- @param count number
 function ItemServerConnector:insert(sourceSlot, item, count)
     local requestId = UUID.generate()
-    rednet.broadcast({
+    rednet.send(self.serverId, {
         command = "insert",
         args = table.pack(
                 self.localInventoryName,
@@ -74,7 +75,7 @@ end
 
 function ItemServerConnector:insertUnknown(sourceSlot, count)
     local requestId = UUID.generate()
-    rednet.broadcast({
+    rednet.send(self.serverId, {
         command = "insertUnknown",
         args = table.pack(
                 self.localInventoryName,
@@ -96,7 +97,7 @@ end
 --- @return ItemSet
 function ItemServerConnector:getItems()
     local requestId = UUID.generate()
-    rednet.broadcast({
+    rednet.send(self.serverId, {
         command = "getItems",
         requestId = requestId
     }, PROTOCOL_ITEM_REQUEST)
@@ -122,7 +123,7 @@ end
 --- @return number
 function ItemServerConnector:craft(itemFilter, count)
     local requestId = UUID.generate()
-    rednet.broadcast({
+    rednet.send(self.serverId, {
         command = "craft",
         args = {itemFilter, count},
         requestId = requestId
@@ -142,10 +143,14 @@ function ItemServerConnector:connect()
     rednet.receive(READINESS_RESPONSE)
 end
 
+--- @param serverId number
 --- @param localInventoryName string
 --- @return ItemServerConnector
-function ItemServerConnector.new(localInventoryName)
-    return setmetatable({ localInventoryName = localInventoryName }, { __index = ItemServerConnector })
+function ItemServerConnector.new(serverId, localInventoryName)
+    assert(type(serverId) == "number", "Server ID must be number")
+
+
+    return setmetatable({ serverId = serverId, localInventoryName = localInventoryName }, { __index = ItemServerConnector })
 end
 
 
