@@ -1,5 +1,6 @@
 local UUID = require("util.UUID")
 local Item = require("util.Item")
+local ItemSet = require("util.ItemSet")
 
 --- @class ItemServerConnector
 --- @field localInventoryName string
@@ -92,7 +93,7 @@ function ItemServerConnector:insertUnknown(sourceSlot, count)
     return response.result[1]
 end
 
---- @return Item[]
+--- @return ItemSet
 function ItemServerConnector:getItems()
     local requestId = UUID.generate()
     rednet.broadcast({
@@ -107,13 +108,13 @@ function ItemServerConnector:getItems()
     end
 
     local rawItems = response.result[1]
-    local wrappedItems = {}
+    local result = ItemSet.new()
 
-    for _, item in pairs(rawItems) do
-        wrappedItems[#wrappedItems + 1] = Item.new(item)
+    for _, item in pairs(rawItems.items) do
+        result:add(Item.new(item))
     end
 
-    return wrappedItems
+    return result
 end
 
 --- @param itemFilter ItemFilter

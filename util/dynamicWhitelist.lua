@@ -4,14 +4,15 @@ local FilterList = require("util.filterList")
 --- @class DynamicWhiteList : Filter
 --- @field filterList FilterList
 --- @field inventory Inventory
-local DynamicWhiteList = setmetatable({}, { __index = FilterList })
+local DynamicWhiteList = {}
 
+--- @param self DynamicWhiteList
 local function assertInitialization(self)
-    if not self.filters then
+    if not self.filterList then
         local containedItems = self.inventory:getItems()
         local filters = {}
 
-        for _, item in pairs(containedItems) do
+        for _, item in containedItems:iterator() do
             filters[#filters + 1] = ItemFilter.new(item)
         end
 

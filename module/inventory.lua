@@ -18,7 +18,7 @@ function Inventory:pushItem(targetName, targetSlot, filter, amount) end
 --- @return number
 function Inventory:pullItem(sourceName, sourceSlot, item, amount) end
 
---- @return Item[]
+--- @return ItemSet
 function Inventory:getItems() end
 
 --- @param filter Filter

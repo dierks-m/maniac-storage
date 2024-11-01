@@ -1,5 +1,5 @@
 local util = require("util.util")
-
+local ItemSet = require("util.ItemSet")
 
 --- Inventory class
 --- @class PhysicalInventory : Inventory
@@ -20,37 +20,15 @@ local function acceptsItem(self, item)
     return self.filter:matches(item)
 end
 
---- Adds an item to a list of items, increasing the count if the item
---- already exists in that list
---- @param list Item[]
---- @param item Item
-local function addItemToList(list, item)
-    for _, listItem in pairs(list) do
-        if listItem == item then
-            listItem.count = listItem.count + item.count
-            return
-        end
-    end
-
-    table.insert(list, item:clone())
-    list[#list].maxCount = nil
-end
-
---- Compiles a list of items from a list of stacks
---- @param inventory table<number, Item>
---- @return Item[]
-local function compileItemList(inventory)
-    local items = {}
-
-    for _, slot in pairs(inventory) do
-        addItemToList(items, slot)
-    end
-
-    return items
-end
 
 function PhysicalInventory:getItems()
-    return compileItemList(self.cache:getCacheData())
+    local result = ItemSet.new()
+
+    for _, v in pairs(self.cache:getCacheData()) do
+        result:add(v)
+    end
+
+    return result
 end
 
 function PhysicalInventory:pushItem(targetName, targetSlot, filter, amount)

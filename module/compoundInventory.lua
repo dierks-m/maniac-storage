@@ -1,5 +1,6 @@
 -- Variables --
 local util = require("util.util")
+local ItemSet = require("util.ItemSet")
 
 --- @class CompoundInventory
 --- @field inventoryList table<number, Inventory[]>
@@ -94,39 +95,19 @@ local function itemAmountDesc(inventoryList, item)
     end, inventoryList, nil
 end
 
---- Adds an item to a list of items, increasing the count if the item
---- already exists in that list
---- @param list Item[]
---- @param item Item
-local function addItemToList(list, item)
-    for _, listItem in pairs(list) do
-        if listItem == item then
-            listItem.count = listItem.count + item.count
-            return
-        end
-    end
-
-    table.insert(list, item:clone())
-    list[#list].maxCount = nil
-end
-
 --- Compiles a list of items from a list of stacks
 --- @param inventoryMap table<number, Inventory[]>
 --- @return Item[]
 local function compileItemList(inventoryMap)
+    local result = ItemSet.new()
     local getItemFunctions = {}
-    local items = {}
 
     for _, inventoryList in pairs(inventoryMap) do
         for _, inventory in pairs(inventoryList) do
             table.insert(
                     getItemFunctions,
                     function()
-                        local inventoryItems = inventory:getItems()
-
-                        for _, item in pairs(inventoryItems) do
-                            addItemToList(items, item)
-                        end
+                        result:unite(inventory:getItems())
                     end
             )
         end
@@ -134,7 +115,7 @@ local function compileItemList(inventoryMap)
 
     parallel.waitForAll(table.unpack(getItemFunctions))
 
-    return items
+    return result
 end
 
 function CompoundInventory:getItems()
