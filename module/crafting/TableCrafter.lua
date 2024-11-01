@@ -39,6 +39,7 @@ end
 --- @param items table<number, ItemFilter>
 --- @param count number
 --- @param attemptedRecipes CraftingRecipe[]
+---- @return boolean
 local function itemsAvailableInSystem(self, items, count, attemptedRecipes)
     local allSlotsValidated = false
 
@@ -47,21 +48,13 @@ local function itemsAvailableInSystem(self, items, count, attemptedRecipes)
         allSlotsValidated = true
 
         for _, itemFilter in pairs(items) do
-            local missingItems = count
+            local availableItems = sysItems:getMatchingItems(itemFilter):count()
 
-            for _, item in pairs(sysItems) do
-                if itemFilter:matches(item) then
-                    local available = item.count
-                    item.count = math.max(0, available - missingItems)
-                    missingItems = missingItems - math.min(missingItems, available)
-                end
-            end
+            if availableItems < count then
+                availableItems = availableItems + craftInternal(self, itemFilter, count - availableItems, {table.unpack(attemptedRecipes)})
+                availableItems = availableItems < count and availableItems + self.itemSystem:craft(itemFilter, count - availableItems) or availableItems
 
-            if missingItems > 0 then
-                missingItems = math.max(0, missingItems - craftInternal(self, itemFilter, missingItems, {table.unpack(attemptedRecipes)}))
-                missingItems = missingItems > 0 and math.max(0, missingItems - self.itemSystem:craft(itemFilter, missingItems)) or missingItems
-
-                if missingItems > 0 then
+                if availableItems < count then
                     return false
                 end
 

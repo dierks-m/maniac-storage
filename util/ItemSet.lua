@@ -81,6 +81,16 @@ function ItemSet:size()
     return count
 end
 
+function ItemSet:count()
+    local totalCount = 0
+
+    for _, item in pairs(self.items) do
+        totalCount = totalCount + item.count
+    end
+
+    return totalCount
+end
+
 function ItemSet:iterator()
     return pairs(self.items)
 end
