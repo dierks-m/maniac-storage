@@ -1,0 +1,45 @@
+{
+  "inventories": {
+    "storagedrawers:fractional_drawers_3_0": {
+      "priority": 1,
+      "whitelist": [
+        {"name": "minecraft:iron_nugget"},
+        {"name": "minecraft:iron_ingot"},
+        {"name": "minecraft:iron_block"}
+      ]
+    },
+    "storagedrawers:controller_0": {
+      "priority": 1,
+      "whitelist": [
+        {"name": "minecraft:cobblestone"},
+        {"name": "biomesoplenty:orange_sandstone"},
+        {"name": "minecraft:dirt"},
+        {"name": "minecraft:cobbled_deepslate"},
+        {"name": "minecraft:stick"}
+      ]
+    },
+    "storagedrawers:fractional_drawers_3_1": {
+      "priority": 1,
+      "whitelist": [
+        {"name": "minecraft:redstone"},
+        {"name": "minecraft:redstone_block"}
+      ]
+    },
+    "ironchest:diamond_chest_0": {
+      "priority": 0
+    },
+    "ironchest:diamond_chest_1": {
+      "priority": 0
+    },
+    "ironchest:diamond_chest_2": {
+      "priority": 0
+    },
+    "ironchest:diamond_chest_3": {
+      "priority": 0
+    }
+  },
+  "crafters": [
+    5
+  ],
+  "identifier": "minecraft:barrel_0"
+}
