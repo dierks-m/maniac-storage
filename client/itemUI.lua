@@ -127,11 +127,6 @@ local function drawItemSelectionWindow(itemList, selectedItem, win)
     win.clear()
     local sizeX, sizeY = win.getSize()
 
-    local standardBg = colors.toBlit(colors.gray)
-    local durabilityBg = colors.toBlit(colors.green)
-    local durabilitySelectedBg = colors.toBlit(colors.lime)
-    local selectedBg = colors.toBlit(colors.cyan)
-
     for i, item in pairs(itemList) do
         win.setCursorPos(1, i)
 
