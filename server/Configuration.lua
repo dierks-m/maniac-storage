@@ -20,6 +20,7 @@ local CrafterConnector = require("util.CrafterConnector")
 --- @field name string
 --- @field priority number
 --- @field whitelist table
+--- @field blacklist table
 --- @field type string
 
 --- @class TextConfiguration
@@ -79,8 +80,8 @@ local function sanitizeConfiguration(configTable)
                     priority = assertType(inv.priority, "number", true, 0, "Priority must be number value"),
                     whitelist = assertType(inv.whitelist, "table", true, nil, "Whitelist must be table of items"),
                     blacklist = assertType(inv.blacklist, "table", true, nil, "Whitelist must be table of items"),
-                    disableLimitCheck = assertType(inv.disableLimitCheck, "boolean", true, false, "Limit check must be boolean"),
-                    dynamicWhitelist = assertType(inv.dynamicWhitelist, "boolean", true, false, "Dynamic whitelist must be boolean")
+                    disableLimitCheck = assertType(inv.disable_limit_check, "boolean", true, false, "Limit check must be boolean"),
+                    dynamicWhitelist = assertType(inv.dynamic_whitelist, "boolean", true, false, "Dynamic whitelist must be boolean")
                 }
 
                 config.inventories[name] = inventory

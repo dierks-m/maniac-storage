@@ -166,7 +166,7 @@ local function initialize()
     local timeBefore = os.clock()
 
     print("Loading configuration.")
-    config = Configuration.loadConfiguration("/server/config.json")
+    config = Configuration.loadConfiguration("server/config.json")
 
     print("Indexing inventories.")
     config.inventory:getItems() -- Force cache initialization

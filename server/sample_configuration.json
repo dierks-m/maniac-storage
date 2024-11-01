@@ -10,13 +10,7 @@
     },
     "storagedrawers:controller_0": {
       "priority": 1,
-      "whitelist": [
-        {"name": "minecraft:cobblestone"},
-        {"name": "biomesoplenty:orange_sandstone"},
-        {"name": "minecraft:dirt"},
-        {"name": "minecraft:cobbled_deepslate"},
-        {"name": "minecraft:stick"}
-      ]
+      "dynamic_whitelist": true
     },
     "storagedrawers:fractional_drawers_3_1": {
       "priority": 1,
@@ -26,7 +20,11 @@
       ]
     },
     "ironchest:diamond_chest_0": {
-      "priority": 0
+      "priority": 0,
+      "blacklist": [
+        {"name": "minecraft:carrot"},
+        {"tags": {"minecraft:planks": true}}
+      ]
     },
     "ironchest:diamond_chest_1": {
       "priority": 0
