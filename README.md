@@ -1,6 +1,14 @@
 # Maniac Storage
 Creating the ✨tech debt✨ I usually have to deal with.
 
+## Why?
+I lately play with custom mod packs, where I don't include any source of energy and thus also no AppliedEnergistics or RefinedStorage, which I also feel are sort of OP.
+However, manually sorting items and going through chests is *annoying*.\
+So I created my own item management system within CC:Tweaked.
+
+Why would *you* use it? *I have absolutely no idea.*\
+If you have the same limitations or just avoid AE/RS, but have CC:Tweaked at your capacity, today is your lucky day.
+
 ## Client
 ![Client Interface](img/item-ui-1.png)
 
