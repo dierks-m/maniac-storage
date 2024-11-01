@@ -27,6 +27,12 @@ end
 
 --- @param thread Thread
 function ThreadPool:add(thread)
+    for _, t in pairs(self.threads) do
+        if t == thread then
+            return
+        end
+    end
+
     self.threads[#self.threads + 1] = thread
 end
 
@@ -34,14 +40,8 @@ end
 --- If this thread dies, the run method will return.
 --- @param thread Thread
 function ThreadPool:join(thread)
-    for _, t in pairs(self.threads) do
-        if t == thread then
-            self.joinedThreads[#self.joinedThreads + 1] = thread
-            return
-        end
-    end
-
     self:add(thread)
+    self.joinedThreads[#self.joinedThreads + 1] = thread
 end
 
 --- Runs all threads until one of the joined threads dies.
@@ -49,12 +49,12 @@ function ThreadPool:run()
     while allJoinedThreadsAlive(self) do
         local event = { coroutine.yield() }
 
-        resumeCoroutines(self, unpack(event))
-
         if event[1] == "terminate" then
             self.threads = {}
             error("Terminated", 0)
         end
+
+        resumeCoroutines(self, unpack(event))
     end
 end
 
