@@ -1,4 +1,4 @@
--- TODO: How to document generics with a class?
+--- @generic T
 --- @class Set<T>
 --- @field values T[]
 local Set = {}
@@ -14,6 +14,7 @@ function Set:contains(value)
     return false
 end
 
+--- @generic T
 --- @param value T
 function Set:add(value)
     if not Set.contains(self, value) then
@@ -21,11 +22,13 @@ function Set:add(value)
     end
 end
 
+--- @generic T
 --- @return T[]
 function Set:toList()
     return self.values
 end
 
+--- @generic T
 --- @param other Set<T>
 --- @return Set<T>
 function Set:unite(other)
@@ -42,6 +45,7 @@ function Set:unite(other)
     return newSet
 end
 
+--- @generic T
 --- @param other Set<T>
 --- @return Set<T>
 function Set:intersect(other)
