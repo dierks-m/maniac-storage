@@ -33,17 +33,17 @@ local function damageMatches(filter, stack)
     return not filter.damage or filter.damage == stack.damage
 end
 
-local function tagsMatch(filter, stack)
+--- @param filter ItemFilter
+--- @param tags table<string, boolean>
+local function tagsMatch(filter, tags)
     if not filter.tags then
         return true
-    end
-
-    if type(stack.tags) ~= "table" then
+    elseif type(tags) ~= "table" then
         return false
     end
 
     for tag in pairs(filter.tags) do
-        if not stack.tags[tag] then
+        if not tags[tag] then
             return false
         end
     end
@@ -72,16 +72,16 @@ local function hasEnchantment(enchantments, enchantmentFilter)
 end
 
 --- @param filter ItemFilter
---- @param stack Item
-local function enchantmentsMatch(filter, stack)
+--- @param enchantments Enchantment[]
+local function enchantmentsMatch(filter, enchantments)
     if not filter.enchantments then
         return true
-    elseif not stack.enchantments then
+    elseif not enchantments then
         return false
     end
 
     for _, enchantment in pairs(filter.enchantments) do
-        if not hasEnchantment(stack.enchantments, enchantment) then
+        if not hasEnchantment(enchantments, enchantment) then
             return false
         end
     end
@@ -102,14 +102,16 @@ local function hasItemGroup(itemGroups, group)
 end
 
 --- @param filter ItemFilter
---- @param stack Item
-local function itemGroupsMatch(filter, stack)
+--- @param itemGroups ItemGroup[]
+local function itemGroupsMatch(filter, itemGroups)
     if not filter.itemGroups then
         return true
+    elseif not itemGroups then
+        return false
     end
 
     for _, group in pairs(filter.itemGroups) do
-        if not hasItemGroup(stack.itemGroups, group) then
+        if not hasItemGroup(itemGroups, group) then
             return false
         end
     end
@@ -132,33 +134,19 @@ local function equals(self, other)
         return false
     end
 
-    if self.enchantments then
-        for _, enchantment in pairs(self.enchantments) do
-            if not hasEnchantment(other.enchantments, enchantment) then
-                return false
-            end
-        end
-
-        for _, enchantment in pairs(other.enchantments) do
-            if not hasEnchantment(self.enchantments, enchantment) then
-                return false
-            end
-        end
+    if not enchantmentsMatch(self, other.enchantments) then
+        return false
     end
 
-    if self.itemGroups then
-        for _, group in pairs(self.itemGroups) do
-            if not hasItemGroup(other.itemGroups, group) then
-                return false
-            end
-        end
-
-        for _, group in pairs(other.itemGroups) do
-            if not hasItemGroup(self.itemGroups, group) then
-                return false
-            end
-        end
+    if not itemGroupsMatch(self, other.itemGroups) then
+        return false
     end
+
+    if not tagsMatch(self, other.tags) then
+        return false
+    end
+
+    return true
 end
 
 --- @param item Item
@@ -168,9 +156,9 @@ function ItemFilter:matches(item)
             and nameMatches(self, item)
             and nbtMatches(self, item)
             and damageMatches(self, item)
-            and tagsMatch(self, item)
-            and enchantmentsMatch(self, item)
-            and itemGroupsMatch(self, item)
+            and tagsMatch(self, item.tags)
+            and enchantmentsMatch(self, item.enchantments)
+            and itemGroupsMatch(self, item.itemGroups)
 end
 
 --- @return ItemFilter
