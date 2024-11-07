@@ -10,6 +10,12 @@ local CompactingDrawerItemCache = {}
 local function updateChangedSlots(self)
     local newItemList = self.inventory.list()
 
+    for slot in pairs(self.itemCache) do
+        if not newItemList[slot] then
+            self.itemCache[slot] = nil
+        end
+    end
+
     for slot, itemStack in pairs(newItemList) do
         if not self.itemCache[slot] then
             self.itemCache[slot] = Item.new(self.inventory.getItemDetail(slot))
