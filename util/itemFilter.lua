@@ -117,6 +117,50 @@ local function itemGroupsMatch(filter, stack)
     return true
 end
 
+--- @param self ItemFilter
+--- @param other ItemFilter
+local function equals(self, other)
+    if self.displayName ~= other.displayName
+            or self.displayNamePattern ~= other.displayNamePattern
+            or self.name ~= other.name
+            or self.nbt ~= other.nbt
+            or self.damage ~= other.damage
+            or self.enchantments and not other.enchantments
+            or other.enchantments and not self.enchantments
+            or self.itemGroups and not other.itemGroups
+            or other.itemGroups and not self.itemGroups then
+        return false
+    end
+
+    if self.enchantments then
+        for _, enchantment in pairs(self.enchantments) do
+            if not hasEnchantment(other.enchantments, enchantment) then
+                return false
+            end
+        end
+
+        for _, enchantment in pairs(other.enchantments) do
+            if not hasEnchantment(self.enchantments, enchantment) then
+                return false
+            end
+        end
+    end
+
+    if self.itemGroups then
+        for _, group in pairs(self.itemGroups) do
+            if not hasItemGroup(other.itemGroups, group) then
+                return false
+            end
+        end
+
+        for _, group in pairs(other.itemGroups) do
+            if not hasItemGroup(self.itemGroups, group) then
+                return false
+            end
+        end
+    end
+end
+
 --- @param item Item
 function ItemFilter:matches(item)
     return displayNameMatches(self, item)
@@ -131,7 +175,7 @@ end
 
 --- @return ItemFilter
 ItemFilter.new = function(filter)
-    return setmetatable(filter, { __index = ItemFilter })
+    return setmetatable(filter, { __index = ItemFilter, __eq = equals })
 end
 -- Functions --
 
