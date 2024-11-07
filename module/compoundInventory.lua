@@ -130,7 +130,7 @@ end
 function CompoundInventory:extract(targetName, targetSlot, filter, amount)
     local totalTransferred = 0
 
-    for _, inventoryList in util.ipairsReverse(self.inventoryList) do
+    for _, inventoryList in util.ipairsGapped(self.inventoryList) do
         for _, inventory in itemAmountAsc(inventoryList, filter) do
             if amount - totalTransferred <= 0 then
                 return totalTransferred
