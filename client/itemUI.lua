@@ -11,7 +11,7 @@ local SmartItemFilter = require("client.SmartItemFilter")
 local ClientConfiguration = require("client.ClientConfiguration")
 
 -- Variables --
-local config = ClientConfiguration.load("client/client_configuration.json")
+local config = ClientConfiguration.load("client_configuration.json")
 local autoClearSearchInterval = 30
 
 local mainWindow
@@ -67,11 +67,11 @@ local themes = {
         orderBackground = 0x808080,
         selectedBackground = 0x24405c,
         text = 0xe8e8e8,
-        durability = 0x41585c,
+        durability = 0x2a2638,
         durabilitySelected = 0x2f8a78,
         durabilityText = 0x046335,
         itemCount = 0x0e7d64,
-        enchantmentText = 0xa80a94,
+        enchantmentText = 0x910980,
         stackSizeText = 0xc27b2b,
         gray = 0x9c9c9c,
     }
@@ -132,6 +132,7 @@ local function drawItemSelectionWindow(itemList, selectedItem, win)
 
         local bgColor = item == selectedItem and blitColor.durabilitySelected or blitColor.durability
         local bgColor2 = item == selectedItem and blitColor.selectedBackground or blitColor.windowBackground
+        local textColor = item.enchantments and blitColor.enchantmentText or blitColor.text
         local durabilityWidth = math.floor((item.durability or 0) * sizeX)
 
         local amount = formatAmount(item.count)
@@ -139,7 +140,7 @@ local function drawItemSelectionWindow(itemList, selectedItem, win)
 
         win.blit(
                 truncatedName .. (" "):rep(sizeX - #amount - #truncatedName) .. amount,
-                blitColor.text:rep(sizeX - #amount) .. blitColor.itemCount:rep(#amount),
+                textColor:rep(sizeX - #amount) .. blitColor.itemCount:rep(#amount),
                 bgColor:rep(durabilityWidth) .. bgColor2:rep(sizeX - durabilityWidth)
         )
 
@@ -191,6 +192,12 @@ local function drawItemInfoWindow()
     itemInfoWindow.write("Stack Size ")
     itemInfoWindow.setTextColor(colors.fromBlit(blitColor.text))
     itemInfoWindow.write(selectedItem.maxCount)
+    yPos = yPos + 1
+    itemInfoWindow.setCursorPos(1, yPos)
+    itemInfoWindow.setTextColor(colors.fromBlit(blitColor.stackSizeText))
+    itemInfoWindow.write("Available  ")
+    itemInfoWindow.setTextColor(colors.fromBlit(blitColor.text))
+    itemInfoWindow.write(selectedItem.count)
 
     if rawNameWindow then
         rawNameWindow.setCursorPos(1, 1)
@@ -371,7 +378,9 @@ local function keyPressHandler()
 
                     selectedItem = determineSelectedItem(selectedItem)
 
+                    drawItemSelectionWindow(availableItems, selectedItem, itemSelectionWindow)
                     drawItemInfoWindow()
+                    os.queueEvent("search_enabled")
                 end):start())
             end
 
@@ -583,9 +592,9 @@ end
 
 initialize()
 
+threadPool:join(Thread.new(function() inputLoop(searchBarWindow) end):start())
 threadPool:join(Thread.new(keyPressHandler):start())
 threadPool:join(Thread.new(mouseHandler):start())
-threadPool:join(Thread.new(function() inputLoop(searchBarWindow) end):start())
 threadPool:join(Thread.new(mtHandler):start())
 
 if not pocket then
